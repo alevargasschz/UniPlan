@@ -175,7 +175,7 @@ Contiene:
   * nombre
   * correo
   * tipo
-* detalles específicos según el tipo de evento
+* datos específicos según el tipo de evento
 
 ---
 
@@ -240,7 +240,7 @@ Uno de los principales motivos para usar MongoDB fue la necesidad de manejar mú
 * horas requeridas
 * actividades
 * puntos de encuentro
-* responsabilidades
+* responsables
 
 ###### Otros
 
