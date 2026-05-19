@@ -29,14 +29,15 @@ public interface IEventoRepository extends MongoRepository<Evento, String> {
     List<Evento> findByFechaHoraInicioBetween(Date inicio, Date fin);
 
     /**
-     * RF21, RF30 - Obtiene eventos creados por un organizador específico.
+     * RF21, RF30 - Obtiene eventos creados por un organizador específico por su
+     * correo.
      */
-    List<Evento> findByOrganizadorUsername(String username);
+    List<Evento> findByOrganizadorCorreo(String correoOrganizador);
 
     /**
-     * RF30 - Valida que el evento pertenezca al organizador.
+     * RF30 - Valida que el evento pertenezca al organizador por correo.
      */
-    Optional<Evento> findByIdAndOrganizadorUsername(String id, String username);
+    Optional<Evento> findByIdAndOrganizadorCorreo(String id, String correoOrganizador);
 
     /**
      * RF09 - Combinación de filtros: estado y rango de fechas.
@@ -61,7 +62,7 @@ public interface IEventoRepository extends MongoRepository<Evento, String> {
     /**
      * RF30 - Cuenta eventos de un organizador.
      */
-    long countByOrganizadorUsername(String username);
+    long countByOrganizadorCorreo(String correoOrganizador);
 
     /**
      * RF12 - Valida disponibilidad de cupos.
