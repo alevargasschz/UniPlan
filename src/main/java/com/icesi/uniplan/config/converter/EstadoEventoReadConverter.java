@@ -2,7 +2,9 @@ package com.icesi.uniplan.config.converter;
 
 import com.icesi.uniplan.model.mongo.enums.EstadoEvento;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.convert.ReadingConverter;
 
+@ReadingConverter
 public class EstadoEventoReadConverter implements Converter<String, EstadoEvento> {
 
     @Override

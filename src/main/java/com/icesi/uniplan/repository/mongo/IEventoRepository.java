@@ -70,4 +70,10 @@ public interface IEventoRepository extends MongoRepository<Evento, String> {
     @Query("{ 'id': ?0, 'cuposDisponibles': { $gt: 0 } }")
     Optional<Evento> findByIdAndCuposAvailable(String id);
 
+    /**
+     * Informe 2 - Historial de inscripciones de un estudiante.
+     */
+    @Query("{ 'inscripciones': { $elemMatch: { 'correo': ?0 } } }")
+    List<Evento> findByInscripcionesCorreo(String correo);
+
 }

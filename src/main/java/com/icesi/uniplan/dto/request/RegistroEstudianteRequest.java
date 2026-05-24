@@ -1,7 +1,7 @@
 package com.icesi.uniplan.dto.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -12,8 +12,7 @@ public class RegistroEstudianteRequest {
     private String codigoEstudiantil;
 
     @NotBlank(message = "El correo es requerido")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@u\\.icesi\\.edu\\.co$",
-             message = "Debe ser un correo institucional @u.icesi.edu.co")
+    @Email(message = "Debe ser un correo válido")
     private String correo;
 
     @NotBlank(message = "La contraseña es requerida")
