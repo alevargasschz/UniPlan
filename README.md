@@ -2,7 +2,7 @@
 
 ## Equipo 20 - IHN
 
-* Jose David Loaiza
+* Jose David Loaiza - A00404821
 * Juan Jose Reyes
 * Laura Sofia Buitrago
 * Alejandro Vargas Sanchez - A00404840
