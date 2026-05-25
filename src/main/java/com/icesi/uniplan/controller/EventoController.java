@@ -11,18 +11,20 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("/eventos")
 @RequiredArgsConstructor
 public class EventoController {
@@ -34,53 +36,75 @@ public class EventoController {
     // -------------------------------------------------------------------------
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<EventoResumenResponse>>> listarEventos(
+    public String listarEventos(
             @RequestParam(required = false) TipoEvento tipo,
             @RequestParam(required = false) EstadoEvento estado,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date inicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date fin) {
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date fin,
+            Model model) {
 
-        List<EventoResumenResponse> response = eventoService.listarEventos(tipo, estado, inicio, fin)
+        List<EventoResumenResponse> eventos = eventoService.listarEventos(tipo, estado, inicio, fin)
                 .stream().map(this::toResumen).collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        model.addAttribute("eventos", eventos);
+        model.addAttribute("tipo", tipo);
+        model.addAttribute("estado", estado);
+        return "eventos/lista";
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<EventoResponse>> obtenerEvento(@PathVariable String id) {
-        return ResponseEntity.ok(ApiResponse.ok(toDetalle(eventoService.obtenerEvento(id))));
+    public String obtenerEvento(@PathVariable String id, Model model) {
+        model.addAttribute("evento", toDetalle(eventoService.obtenerEvento(id)));
+        return "eventos/detalle";
     }
 
     // -------------------------------------------------------------------------
     // Gestión de eventos (solo organizadores)
     // -------------------------------------------------------------------------
 
-    @PostMapping
+    @GetMapping("/crear")
     @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
-    public ResponseEntity<ApiResponse<EventoResponse>> crearEvento(
-            @Valid @RequestBody CrearEventoRequest request,
-            Authentication authentication) {
+    public String crearEventoForm(Model model) {
+        model.addAttribute("request", new CrearEventoRequest());
+        model.addAttribute("tiposEvento", TipoEvento.values());
+        return "eventos/crear";
+    }
 
-        Evento evento = eventoService.crearEvento(request, authentication.getName());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.ok("Evento creado exitosamente", toDetalle(evento)));
+    @PostMapping("/crear")
+    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
+    public String crearEvento(
+            @Valid @ModelAttribute CrearEventoRequest request,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            Evento evento = eventoService.crearEvento(request, authentication.getName());
+            redirectAttributes.addFlashAttribute("success", "Evento creado exitosamente");
+            return "redirect:/eventos/" + evento.getId();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/eventos/crear";
+        }
     }
 
     @GetMapping("/mis-eventos")
     @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
-    public ResponseEntity<ApiResponse<List<EventoResumenResponse>>> misEventos(Authentication authentication) {
-        List<EventoResumenResponse> response = eventoService.listarEventosPorOrganizador(authentication.getName())
+    public String misEventos(Authentication authentication, Model model) {
+        List<EventoResumenResponse> eventos = eventoService.listarEventosPorOrganizador(authentication.getName())
                 .stream().map(this::toResumen).collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        model.addAttribute("eventos", eventos);
+        return "eventos/mis-eventos";
     }
 
     @GetMapping("/{id}/inscritos")
     @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
-    public ResponseEntity<ApiResponse<List<InscritoResponse>>> listarInscritos(
-            @PathVariable String id, Authentication authentication) {
+    public String listarInscritos(
+            @PathVariable String id, Authentication authentication, Model model) {
 
-        List<InscritoResponse> response = eventoService.listarInscritos(id, authentication.getName())
+        List<InscritoResponse> inscritos = eventoService.listarInscritos(id, authentication.getName())
                 .stream().map(this::toInscrito).collect(Collectors.toList());
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        model.addAttribute("inscritos", inscritos);
+        model.addAttribute("eventoId", id);
+        return "eventos/inscritos";
     }
 
     @GetMapping("/{id}/inscritos/export")

@@ -9,6 +9,9 @@ import lombok.Data;
 @Data
 public class RegistroOrganizadorRequest {
 
+    @NotBlank(message = "El nombre es requerido")
+    private String nombre;
+
     @NotBlank(message = "El correo es requerido")
     private String correo;
 

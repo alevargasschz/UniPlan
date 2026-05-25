@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - UniPlan</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+    <form action="/public/auth/login" method="post">
+        <div>
+            <label for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" required>
+        </div>
+        <div>
+            <label for="contrasena">Contraseña:</label>
+            <input type="password" id="contrasena" name="contrasena" required>
+        </div>
+        <button type="submit">Iniciar Sesión</button>
+    </form>
+    <p><a href="/public/auth/registro/estudiante">Registrarse como estudiante</a></p>
+</body>
+</html>

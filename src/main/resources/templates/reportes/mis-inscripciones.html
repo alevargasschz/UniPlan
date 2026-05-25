@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Inscripciones - UniPlan</title>
+</head>
+<body>
+    <h1>Mis Inscripciones</h1>
+    <p><a href="/eventos">Volver a Eventos</a></p>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Fecha Inicio</th>
+                <th>Ubicación</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="evento : ${eventos}">
+                <td th:text="${evento.titulo}"></td>
+                <td th:text="${evento.tipo}"></td>
+                <td th:text="${evento.fechaHoraInicio}"></td>
+                <td th:text="${evento.ubicacion}"></td>
+                <td th:text="${evento.estado}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

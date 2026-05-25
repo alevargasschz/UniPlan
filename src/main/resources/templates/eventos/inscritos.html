@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscritos - UniPlan</title>
+</head>
+<body>
+    <h1>Lista de Inscritos</h1>
+    <p><a th:href="@{/eventos/{id}(id=${eventoId})}">Volver al Evento</a></p>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Correo</th>
+                <th>Fecha Inscripción</th>
+                <th>Confirmada</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="inscrito : ${inscritos}">
+                <td th:text="${inscrito.nombre}"></td>
+                <td th:text="${inscrito.codigoEstudiante}"></td>
+                <td th:text="${inscrito.correo}"></td>
+                <td th:text="${inscrito.fechaInscripcion}"></td>
+                <td th:text="${inscrito.confirmada}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a th:href="@{/eventos/{id}/inscritos/export(id=${eventoId})}">Exportar CSV</a>
+</body>
+</html>

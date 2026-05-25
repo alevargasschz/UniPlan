@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Top Eventos - UniPlan</title>
+</head>
+<body>
+    <h1>Top Eventos por Ocupación</h1>
+    <p><a href="/eventos">Volver a Eventos</a></p>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Total Inscritos</th>
+                <th>Max Asistentes</th>
+                <th>% Ocupación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="est : ${estadisticas}">
+                <td th:text="${est.titulo}"></td>
+                <td th:text="${est.tipo}"></td>
+                <td th:text="${est.totalInscritos}"></td>
+                <td th:text="${est.maxAsistentes}"></td>
+                <td th:text="${est.porcentajeOcupacion}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

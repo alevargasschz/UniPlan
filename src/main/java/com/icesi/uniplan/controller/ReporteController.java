@@ -1,21 +1,21 @@
 package com.icesi.uniplan.controller;
 
-import com.icesi.uniplan.dto.response.ApiResponse;
 import com.icesi.uniplan.dto.response.EstadisticaResponse;
 import com.icesi.uniplan.dto.response.EventoResumenResponse;
 import com.icesi.uniplan.model.mongo.Evento;
 import com.icesi.uniplan.service.IEstadisticaService;
 import com.icesi.uniplan.service.IEventoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("/reportes")
 @RequiredArgsConstructor
 public class ReporteController {
@@ -29,10 +29,13 @@ public class ReporteController {
      * Útil para identificar los eventos más populares.
      */
     @GetMapping("/top-eventos")
-    public ResponseEntity<ApiResponse<List<EstadisticaResponse>>> topEventosPorOcupacion(
-            @RequestParam(defaultValue = "10") int limite) {
-        return ResponseEntity.ok(ApiResponse.ok(
-                estadisticaService.obtenerTopEventosPorOcupacion(limite)));
+    public String topEventosPorOcupacion(
+            @RequestParam(defaultValue = "10") int limite,
+            Model model) {
+        List<EstadisticaResponse> estadisticas = estadisticaService.obtenerTopEventosPorOcupacion(limite);
+        model.addAttribute("estadisticas", estadisticas);
+        model.addAttribute("limite", limite);
+        return "reportes/top-eventos";
     }
 
     /**
@@ -42,14 +45,16 @@ public class ReporteController {
      */
     @GetMapping("/mis-inscripciones")
     @PreAuthorize("hasRole('ESTUDIANTE')")
-    public ResponseEntity<ApiResponse<List<EventoResumenResponse>>> misInscripciones(
-            Authentication authentication) {
+    public String misInscripciones(
+            Authentication authentication,
+            Model model) {
 
-        List<EventoResumenResponse> response = eventoService
+        List<EventoResumenResponse> eventos = eventoService
                 .listarEventosPorEstudiante(authentication.getName())
                 .stream().map(this::toResumen).collect(Collectors.toList());
 
-        return ResponseEntity.ok(ApiResponse.ok(response));
+        model.addAttribute("eventos", eventos);
+        return "reportes/mis-inscripciones";
     }
 
     /**
@@ -57,8 +62,10 @@ public class ReporteController {
      */
     @GetMapping("/estadisticas")
     @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
-    public ResponseEntity<ApiResponse<List<EstadisticaResponse>>> estadisticasCompletas() {
-        return ResponseEntity.ok(ApiResponse.ok(estadisticaService.obtenerEstadisticas()));
+    public String estadisticasCompletas(Model model) {
+        List<EstadisticaResponse> estadisticas = estadisticaService.obtenerEstadisticas();
+        model.addAttribute("estadisticas", estadisticas);
+        return "reportes/estadisticas";
     }
 
     private EventoResumenResponse toResumen(Evento e) {

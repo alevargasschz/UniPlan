@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Organizador - UniPlan</title>
+</head>
+<body>
+    <h1>Crear Organizador</h1>
+    <p><a href="/eventos">Volver a Eventos</a></p>
+    
+    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
+    
+    <form action="/admin/organizadores" method="post" th:object="${request}">
+        <div>
+            <label for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" th:field="*{correo}" required>
+        </div>
+        <div>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" th:field="*{nombre}" required>
+        </div>
+        <div>
+            <label for="contrasena">Contraseña:</label>
+            <input type="password" id="contrasena" name="contrasena" th:field="*{contrasena}" required>
+        </div>
+        <div>
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" name="tipo" th:field="*{tipo}" required>
+                <option value="PROFESOR">Profesor</option>
+                <option value="LIDER_ESTUDIANTIL">Lider Estudiantil</option>
+                <option value="BIENESTAR">Bienestar</option>
+            </select>
+        </div>
+        <button type="submit">Crear Organizador</button>
+    </form>
+</body>
+</html>

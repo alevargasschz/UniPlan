@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Evento - UniPlan</title>
+</head>
+<body>
+    <h1 th:text="${evento.titulo}">Detalle del Evento</h1>
+    <p><a href="/eventos">Volver al catálogo</a></p>
+    
+    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
+    
+    <p><strong>Descripción:</strong> <span th:text="${evento.descripcion}"></span></p>
+    <p><strong>Tipo:</strong> <span th:text="${evento.tipo}"></span></p>
+    <p><strong>Fecha Inicio:</strong> <span th:text="${evento.fechaHoraInicio}"></span></p>
+    <p><strong>Fecha Fin:</strong> <span th:text="${evento.fechaHoraFin}"></span></p>
+    <p><strong>Ubicación:</strong> <span th:text="${evento.ubicacion}"></span></p>
+    <p><strong>Cupos Disponibles:</strong> <span th:text="${evento.cuposDisponibles}"></span></p>
+    <p><strong>Total Inscritos:</strong> <span th:text="${evento.totalInscritos}"></span></p>
+    <p><strong>Estado:</strong> <span th:text="${evento.estado}"></span></p>
+    <p><strong>Organizador:</strong> <span th:text="${evento.organizadorNombre}"></span></p>
+    
+    <form th:action="@{/inscripciones/{id}(id=${evento.id})}" method="post">
+        <button type="submit">Inscribirse</button>
+    </form>
+</body>
+</html>

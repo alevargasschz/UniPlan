@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Evento - UniPlan</title>
+</head>
+<body>
+    <h1>Crear Nuevo Evento</h1>
+    <p><a href="/eventos/mis-eventos">Volver a Mis Eventos</a></p>
+    
+    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
+    
+    <form action="/eventos/crear" method="post" th:object="${request}">
+        <div>
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" th:field="*{titulo}" required>
+        </div>
+        <div>
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" th:field="*{descripcion}" required></textarea>
+        </div>
+        <div>
+            <label for="tipo">Tipo:</label>
+            <select id="tipo" name="tipo" th:field="*{tipo}" required>
+                <option th:each="tipo : ${tiposEvento}" th:value="${tipo}" th:text="${tipo}"></option>
+            </select>
+        </div>
+        <div>
+            <label for="fechaHoraInicio">Fecha Inicio:</label>
+            <input type="datetime-local" id="fechaHoraInicio" name="fechaHoraInicio" th:field="*{fechaHoraInicio}" required>
+        </div>
+        <div>
+            <label for="fechaHoraFin">Fecha Fin:</label>
+            <input type="datetime-local" id="fechaHoraFin" name="fechaHoraFin" th:field="*{fechaHoraFin}" required>
+        </div>
+        <div>
+            <label for="ubicacion">Ubicación:</label>
+            <input type="text" id="ubicacion" name="ubicacion" th:field="*{ubicacion}" required>
+        </div>
+        <div>
+            <label for="maxAsistentes">Máximo Asistentes:</label>
+            <input type="number" id="maxAsistentes" name="maxAsistentes" th:field="*{maxAsistentes}" required min="1">
+        </div>
+        <button type="submit">Crear Evento</button>
+    </form>
+</body>
+</html>
