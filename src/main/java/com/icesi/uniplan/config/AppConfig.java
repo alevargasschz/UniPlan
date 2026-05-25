@@ -33,9 +33,14 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for now, enable later with proper CSRF tokens
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/public/**").permitAll()
+                        .requestMatchers(
+                                "/public/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("BIENESTAR")
                         .anyRequest().authenticated()
                 )

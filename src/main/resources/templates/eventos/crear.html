@@ -2,47 +2,77 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Evento - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/eventos/crear-evento.css}">
 </head>
 <body>
-    <h1>Crear Nuevo Evento</h1>
-    <p><a href="/eventos/mis-eventos">Volver a Mis Eventos</a></p>
-    
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
-    
-    <form action="/eventos/crear" method="post" th:object="${request}">
-        <div>
-            <label for="titulo">Título:</label>
-            <input type="text" id="titulo" name="titulo" th:field="*{titulo}" required>
+    <div class="event-card">
+
+        <div class="card-header">
+            <h1>Crear nuevo evento</h1>
+            <a href="/eventos/mis-eventos" class="back-link">← Volver a mis eventos</a>
         </div>
-        <div>
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" th:field="*{descripcion}" required></textarea>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span th:text="${error}"></span>
         </div>
-        <div>
-            <label for="tipo">Tipo:</label>
-            <select id="tipo" name="tipo" th:field="*{tipo}" required>
-                <option th:each="tipo : ${tiposEvento}" th:value="${tipo}" th:text="${tipo}"></option>
-            </select>
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}"></span>
         </div>
-        <div>
-            <label for="fechaHoraInicio">Fecha Inicio:</label>
-            <input type="datetime-local" id="fechaHoraInicio" name="fechaHoraInicio" th:field="*{fechaHoraInicio}" required>
-        </div>
-        <div>
-            <label for="fechaHoraFin">Fecha Fin:</label>
-            <input type="datetime-local" id="fechaHoraFin" name="fechaHoraFin" th:field="*{fechaHoraFin}" required>
-        </div>
-        <div>
-            <label for="ubicacion">Ubicación:</label>
-            <input type="text" id="ubicacion" name="ubicacion" th:field="*{ubicacion}" required>
-        </div>
-        <div>
-            <label for="maxAsistentes">Máximo Asistentes:</label>
-            <input type="number" id="maxAsistentes" name="maxAsistentes" th:field="*{maxAsistentes}" required min="1">
-        </div>
-        <button type="submit">Crear Evento</button>
-    </form>
+
+        <form action="/eventos/crear" method="post" th:object="${request}">
+
+            <div class="field">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo"
+                    th:field="*{titulo}" placeholder="Nombre del evento" required>
+            </div>
+
+            <div class="field">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion"
+                        th:field="*{descripcion}" placeholder="Describe el evento..." required></textarea>
+            </div>
+
+            <div class="field">
+                <label for="tipo">Tipo de evento</label>
+                <select id="tipo" name="tipo" th:field="*{tipo}" required>
+                    <option value="" disabled selected>Selecciona un tipo</option>
+                    <option th:each="tipo : ${tiposEvento}"
+                            th:value="${tipo}" th:text="${tipo}"></option>
+                </select>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="fechaHoraInicio">Fecha de inicio</label>
+                    <input type="datetime-local" id="fechaHoraInicio"
+                        name="fechaHoraInicio" th:field="*{fechaHoraInicio}" required>
+                </div>
+                <div class="field">
+                    <label for="fechaHoraFin">Fecha de fin</label>
+                    <input type="datetime-local" id="fechaHoraFin"
+                        name="fechaHoraFin" th:field="*{fechaHoraFin}" required>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="ubicacion">Ubicación</label>
+                    <input type="text" id="ubicacion" name="ubicacion"
+                        th:field="*{ubicacion}" placeholder="Ej: Auditorio A" required>
+                </div>
+                <div class="field">
+                    <label for="maxAsistentes">Máximo de asistentes</label>
+                    <input type="number" id="maxAsistentes" name="maxAsistentes"
+                        th:field="*{maxAsistentes}" placeholder="Ej: 100" min="1" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Crear evento</button>
+
+        </form>
+    </div>
 </body>
 </html>

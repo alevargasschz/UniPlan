@@ -2,31 +2,62 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro Estudiante - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/auth/registro-estudiante.css}">
 </head>
 <body>
-    <h1>Registro de Estudiante</h1>
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
-    <form action="/public/auth/registro/estudiante" method="post" th:object="${request}">
-        <div>
-            <label for="correo">Correo:</label>
-            <input type="text" id="correo" name="correo" th:field="*{correo}" required>
+    <div class="register-card">
+
+        <div class="register-icon">
+            <i>✦</i>
         </div>
-        <div>
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" th:field="*{nombre}" required>
+        <h1>Crear cuenta</h1>
+        <p class="register-sub">Completa los datos para registrarte</p>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span th:text="${error}"></span>
         </div>
-        <div>
-            <label for="contrasena">Contraseña:</label>
-            <input type="password" id="contrasena" name="contrasena" th:field="*{contrasena}" required>
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}"></span>
         </div>
-        <div>
-            <label for="codigoEstudiantil">Código Estudiantil:</label>
-            <input type="text" id="codigoEstudiantil" name="codigoEstudiantil" th:field="*{codigoEstudiantil}" required>
-        </div>
-        <button type="submit">Registrarse</button>
-    </form>
-    <p><a href="/public/auth/login">Volver al login</a></p>
+
+        <form action="/public/auth/registro/estudiante" method="post" th:object="${request}">
+
+            <div class="field">
+                <label for="correo">Correo electrónico</label>
+                <input type="text" id="correo" name="correo"
+                    th:field="*{correo}" placeholder="tu@correo.com" required>
+            </div>
+
+            <div class="field">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" name="nombre"
+                    th:field="*{nombre}" placeholder="Tu nombre" required>
+            </div>
+
+            <div class="field">
+                <label for="contrasena">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena"
+                    th:field="*{contrasena}" placeholder="••••••••" required>
+            </div>
+
+            <div class="field">
+                <label for="codigoEstudiantil">Código estudiantil</label>
+                <input type="text" id="codigoEstudiantil" name="codigoEstudiantil"
+                    th:field="*{codigoEstudiantil}" placeholder="Ej: 20231234" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Crear cuenta</button>
+
+        </form>
+
+        <div class="divider">o</div>
+
+        <p class="login-row">
+            ¿Ya tienes cuenta? <a href="/public/auth/login">Iniciar sesión</a>
+        </p>
+
+    </div>
 </body>
 </html>

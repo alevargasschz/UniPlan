@@ -2,22 +2,57 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - UniPlan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión</title>
+    <link rel="stylesheet" th:href="@{/css/auth/login.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body>
-    <h1>Login</h1>
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    <form action="/public/auth/login" method="post">
-        <div>
-            <label for="correo">Correo:</label>
-            <input type="text" id="correo" name="correo" required>
+    <div class="login-card">
+
+        <div class="login-icon">
+            <i class="ti ti-user"></i>
         </div>
-        <div>
-            <label for="contrasena">Contraseña:</label>
-            <input type="password" id="contrasena" name="contrasena" required>
+        <h1>Bienvenido</h1>
+        <p class="login-sub">Ingresa tus credenciales para continuar</p>
+
+        <div th:if="${error}" class="error">
+            <i class="ti ti-alert-circle"></i>
+            <span th:text="${error}"></span>
         </div>
-        <button type="submit">Iniciar Sesión</button>
-    </form>
-    <p><a href="/public/auth/registro/estudiante">Registrarse como estudiante</a></p>
+
+        <form action="/public/auth/login" method="post">
+
+            <div class="field">
+                <label for="correo">Correo electrónico</label>
+                <div class="input-wrap">
+                    <input type="text" id="correo" name="correo"
+                        placeholder="tu@correo.com" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="contrasena">Contraseña</label>
+                <div class="input-wrap">
+                    <input type="password" id="contrasena" name="contrasena"
+                        placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="ti ti-arrow-right"></i>
+                Iniciar sesión
+            </button>
+
+        </form>
+
+        <div class="divider">o</div>
+
+        <p class="register-row">
+            ¿No tienes cuenta?
+            <a href="/public/auth/registro/estudiante">Registrarse como estudiante</a>
+        </p>
+
+    </div>
 </body>
 </html>
