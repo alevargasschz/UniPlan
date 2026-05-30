@@ -15,7 +15,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("detalles_taller")
 public class Taller extends DatosEspecificos {
 
     @Field("materiales_requeridos")

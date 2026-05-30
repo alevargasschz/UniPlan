@@ -44,7 +44,7 @@ public class ReporteController {
      * Útil para que el estudiante vea en qué eventos participó o está inscrito.
      */
     @GetMapping("/mis-inscripciones")
-    @PreAuthorize("hasRole('ESTUDIANTE')")
+    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR','ESTUDIANTE')")
     public String misInscripciones(
             Authentication authentication,
             Model model) {

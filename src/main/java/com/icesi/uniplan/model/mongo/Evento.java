@@ -20,6 +20,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,11 +51,11 @@ public class Evento {
 
     @Field("fecha_hora_inicio")
     @NotNull
-    private Date fechaHoraInicio;
+    private LocalDateTime fechaHoraInicio;
 
     @Field("fecha_hora_fin")
     @NotNull
-    private Date fechaHoraFin;
+    private LocalDateTime fechaHoraFin;
 
     @Field("ubicacion")
     @NotBlank
@@ -90,7 +91,5 @@ public class Evento {
     private Organizador organizador;
 
     @Field("datos_especificos")
-    @NotNull
-    @Valid
     private DatosEspecificos datosEspecificos;
 }

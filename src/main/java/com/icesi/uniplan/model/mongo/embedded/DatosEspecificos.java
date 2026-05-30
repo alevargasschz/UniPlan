@@ -1,9 +1,11 @@
 package com.icesi.uniplan.model.mongo.embedded;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.springframework.data.annotation.TypeAlias;
 
-@Data
-@AllArgsConstructor
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_class")
+
 public abstract class DatosEspecificos {
+    public DatosEspecificos() {}
 }

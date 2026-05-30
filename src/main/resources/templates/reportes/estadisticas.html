@@ -3,30 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Estadísticas - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
 </head>
 <body>
-    <h1>Estadísticas Completas</h1>
-    <p><a href="/eventos">Volver a Eventos</a></p>
-    
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Tipo</th>
-                <th>Total Inscritos</th>
-                <th>Total Cancelaciones</th>
-                <th>% Ocupación</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="est : ${estadisticas}">
-                <td th:text="${est.titulo}"></td>
-                <td th:text="${est.tipo}"></td>
-                <td th:text="${est.totalInscritos}"></td>
-                <td th:text="${est.totalCancelaciones}"></td>
-                <td th:text="${est.porcentajeOcupacion}"></td>
-            </tr>
-        </tbody>
+
+  <div class="nav">
+    <span class="nav-brand">UniPlan</span>
+    <div class="nav-links">
+      <a th:href="@{/eventos}">Catálogo de Eventos</a>
+      <a th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
+      <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
+      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>Estadísticas</h1>
+      <a class="ev-link" th:href="@{/reportes/top-eventos}">Top Eventos por Ocupación</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Tipo</th>
+          <th>Inscritos</th>
+          <th>Cancelaciones</th>
+          <th>% Ocupación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="est : ${estadisticas}">
+          <td class="titulo" th:text="${est.titulo}"></td>
+          <td><span class="badge badge-tipo" th:text="${est.tipo}"></span></td>
+          <td th:text="${est.totalInscritos}"></td>
+          <td th:text="${est.totalCancelaciones}"
+              th:classappend="${est.totalCancelaciones gt 0} ? 'cupos-low'"></td>
+          <td th:text="${est.porcentajeOcupacion} + '%'"
+              th:classappend="${est.porcentajeOcupacion ge 90} ? 'cupos-low'"></td>
+        </tr>
+        <tr class="empty-row" th:if="${#lists.isEmpty(estadisticas)}">
+          <td colspan="5">No hay estadísticas disponibles.</td>
+        </tr>
+      </tbody>
     </table>
+  </div>
+
 </body>
 </html>

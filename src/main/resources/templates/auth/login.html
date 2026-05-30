@@ -21,36 +21,36 @@
             <span th:text="${error}"></span>
         </div>
 
-        <form action="/public/auth/login" method="post">
+    <form th:action="@{/public/auth/login}" method="post">
 
-            <div class="field">
-                <label for="correo">Correo electrónico</label>
-                <div class="input-wrap">
-                    <input type="text" id="correo" name="correo"
-                        placeholder="tu@correo.com" required>
-                </div>
-            </div>
+    <div class="field">
+        <label for="correo">Correo Electrónico</label>
+        <div class="input-wrap">
+            <input type="text" id="correo" name="correo"
+                placeholder="tu@correo.com" required>
+        </div>
+    </div>
 
-            <div class="field">
-                <label for="contrasena">Contraseña</label>
-                <div class="input-wrap">
-                    <input type="password" id="contrasena" name="contrasena"
-                        placeholder="••••••••" required>
-                </div>
-            </div>
+    <div class="field">
+        <label for="contrasena">Contraseña</label>
+        <div class="input-wrap">
+            <input type="password" id="contrasena" name="contrasena"
+                placeholder="••••••••" required>
+        </div>
+    </div>
 
-            <button type="submit" class="btn-submit">
-                <i class="ti ti-arrow-right"></i>
-                Iniciar sesión
-            </button>
+    <button type="submit" class="btn-submit">
+        <i class="ti ti-arrow-right"></i>
+        Iniciar sesión
+    </button>
 
-        </form>
+</form>
 
         <div class="divider">o</div>
 
         <p class="register-row">
             ¿No tienes cuenta?
-            <a href="/public/auth/registro/estudiante">Registrarse como estudiante</a>
+            <a th:href=@{/public/auth/registro/estudiante}>Registrarse como estudiante</a>
         </p>
 
     </div>

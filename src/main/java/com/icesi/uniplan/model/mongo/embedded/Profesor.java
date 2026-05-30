@@ -12,7 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("datos_profesor")
 public class Profesor extends DatosEspecificos {
 
     @Field("facultad")

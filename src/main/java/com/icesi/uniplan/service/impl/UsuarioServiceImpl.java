@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -123,5 +125,24 @@ public class UsuarioServiceImpl implements IUsuarioService {
             }
             default -> throw new IllegalArgumentException("Tipo de organizador no válido: " + request.getTipo());
         };
+    }
+
+    // UsuarioServiceImpl
+    @Override
+    public List<Usuario> listarOrganizadores(TipoUsuario tipo) {
+        List<TipoUsuario> tiposOrganizador = Arrays.asList(
+            TipoUsuario.PROFESOR,
+            TipoUsuario.LIDER_ESTUDIANTIL,
+            TipoUsuario.BIENESTAR
+        );
+
+        if (tipo != null && tiposOrganizador.contains(tipo)) {
+            return usuarioRepository.findByTipo(tipo);
+        }
+
+        return tiposOrganizador.stream()
+            .flatMap(t -> usuarioRepository.findByTipo(t).stream())
+            .sorted((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()))
+            .toList();
     }
 }

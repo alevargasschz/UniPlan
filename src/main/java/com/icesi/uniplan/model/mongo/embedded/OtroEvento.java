@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("detalles_otro")
 public class OtroEvento extends DatosEspecificos {
 
     @Field("descripcion_adicional")

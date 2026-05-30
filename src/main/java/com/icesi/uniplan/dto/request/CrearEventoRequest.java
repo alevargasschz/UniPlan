@@ -8,8 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
 @Data
 public class CrearEventoRequest {
 
@@ -24,11 +25,11 @@ public class CrearEventoRequest {
     @NotNull(message = "El tipo de evento es requerido")
     private TipoEvento tipo;
 
-    @NotNull(message = "La fecha de inicio es requerida")
-    private Date fechaHoraInicio;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime fechaHoraInicio;
 
-    @NotNull(message = "La fecha de fin es requerida")
-    private Date fechaHoraFin;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime fechaHoraFin;
 
     @NotBlank(message = "La ubicación es requerida")
     private String ubicacion;

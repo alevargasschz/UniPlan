@@ -1,38 +1,157 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Organizador - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/auth/registro-estudiante.css}">
+    <style>
+        .register-card { max-width: 520px; }
+        .field-group {
+            display: none;
+            border: 0.5px solid rgba(0,0,0,0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #fafaf8;
+        }
+        .field-group.visible { display: block; }
+        .field-group-title {
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888;
+            margin-bottom: 0.75rem;
+        }
+    </style>
 </head>
 <body>
-    <h1>Crear Organizador</h1>
-    <p><a href="/eventos">Volver a Eventos</a></p>
-    
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
-    
-    <form action="/admin/organizadores" method="post" th:object="${request}">
-        <div>
-            <label for="correo">Correo:</label>
-            <input type="text" id="correo" name="correo" th:field="*{correo}" required>
+    <div class="register-card">
+
+        <div class="register-icon"><i>🛡</i></div>
+        <h1>Crear Organizador</h1>
+        <p class="register-sub">Solo personal autorizado puede ser registrado como organizador</p>
+
+        <div th:if="${error}" class="alert alert-error">
+            <span th:text="${error}"></span>
         </div>
-        <div>
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" th:field="*{nombre}" required>
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}"></span>
         </div>
-        <div>
-            <label for="contrasena">Contraseña:</label>
-            <input type="password" id="contrasena" name="contrasena" th:field="*{contrasena}" required>
-        </div>
-        <div>
-            <label for="tipo">Tipo:</label>
-            <select id="tipo" name="tipo" th:field="*{tipo}" required>
-                <option value="PROFESOR">Profesor</option>
-                <option value="LIDER_ESTUDIANTIL">Lider Estudiantil</option>
-                <option value="BIENESTAR">Bienestar</option>
-            </select>
-        </div>
-        <button type="submit">Crear Organizador</button>
-    </form>
+
+        <form th:action="@{/admin/organizadores/crear}" method="post" th:object="${request}">
+            <!-- Datos comunes -->
+            <div class="field">
+                <label for="correo">Correo institucional</label>
+                <input type="email" id="correo" th:field="*{correo}"
+                       placeholder="empleado@icesi.edu.co" required>
+            </div>
+
+            <div class="field">
+                <label for="contrasena">Contraseña</label>
+                <input type="password" id="contrasena" th:field="*{contrasena}"
+                       placeholder="Mínimo 8 caracteres" required>
+            </div>
+
+            <div class="field">
+                <label for="tipo">Tipo de organizador</label>
+                <select id="tipo" th:field="*{tipo}" required onchange="toggleCampos(this.value)">
+                    <option value="">-- Selecciona un tipo --</option>
+                    <option value="PROFESOR">Profesor</option>
+                    <option value="LIDER_ESTUDIANTIL">Líder Estudiantil</option>
+                    <option value="BIENESTAR">Personal de Bienestar</option>
+                </select>
+            </div>
+
+            <!-- Campos PROFESOR -->
+            <div id="campos-profesor" class="field-group">
+                <p class="field-group-title">Datos del Profesor</p>
+                <div class="field">
+                    <label for="facultad">Facultad</label>
+                    <input type="text" id="facultad" th:field="*{facultad}"
+                           placeholder="Ej: Ingeniería">
+                </div>
+                <div class="field">
+                    <label for="departamento">Departamento</label>
+                    <input type="text" id="departamento" th:field="*{departamento}"
+                           placeholder="Ej: Ciencias de la Computación">
+                </div>
+                <div class="field">
+                    <label for="especializacion">Especialización</label>
+                    <input type="text" id="especializacion" th:field="*{especializacion}"
+                           placeholder="Ej: Inteligencia Artificial">
+                </div>
+            </div>
+
+            <!-- Campos LIDER_ESTUDIANTIL -->
+            <div id="campos-lider" class="field-group">
+                <p class="field-group-title">Datos del Líder Estudiantil</p>
+                <div class="field">
+                    <label for="programa">Programa</label>
+                    <input type="text" id="programa" th:field="*{programa}"
+                           placeholder="Ej: Ingeniería de Sistemas">
+                </div>
+                <div class="field">
+                    <label for="semestre">Semestre</label>
+                    <input type="number" id="semestre" th:field="*{semestre}"
+                           placeholder="1 – 15" min="1" max="15">
+                </div>
+                <div class="field">
+                    <label for="representacion">Representación</label>
+                    <input type="text" id="representacion" th:field="*{representacion}"
+                           placeholder="Ej: Consejo Estudiantil">
+                </div>
+            </div>
+
+            <!-- Campos BIENESTAR -->
+            <div id="campos-bienestar" class="field-group">
+                <p class="field-group-title">Datos de Personal de Bienestar</p>
+                <div class="field">
+                    <label for="areaAdministrativa">Área administrativa</label>
+                    <input type="text" id="areaAdministrativa" th:field="*{areaAdministrativa}"
+                           placeholder="Ej: Bienestar Universitario">
+                </div>
+                <div class="field">
+                    <label for="cargo">Cargo</label>
+                    <input type="text" id="cargo" th:field="*{cargo}"
+                           placeholder="Ej: Coordinador de Eventos">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Crear Organizador</button>
+        </form>
+
+        <div class="divider">·</div>
+        <p class="login-row">
+            <a th:href="@{/eventos}">← Volver a Eventos</a>
+        </p>
+
+    </div>
+
+    <script>
+        function toggleCampos(tipo) {
+            document.getElementById('campos-profesor').classList.remove('visible');
+            document.getElementById('campos-lider').classList.remove('visible');
+            document.getElementById('campos-bienestar').classList.remove('visible');
+
+            if (tipo === 'PROFESOR') {
+                document.getElementById('campos-profesor').classList.add('visible');
+            } else if (tipo === 'LIDER_ESTUDIANTIL') {
+                document.getElementById('campos-lider').classList.add('visible');
+            } else if (tipo === 'BIENESTAR') {
+                document.getElementById('campos-bienestar').classList.add('visible');
+            }
+        }
+
+        // Restaurar campos si hay error de validación y tipo ya seleccionado
+        window.addEventListener('DOMContentLoaded', function () {
+            const tipoSelect = document.getElementById('tipo');
+            if (tipoSelect.value) {
+                toggleCampos(tipoSelect.value);
+            }
+        });
+    </script>
 </body>
 </html>

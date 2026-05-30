@@ -3,32 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Inscritos - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
 </head>
 <body>
-    <h1>Lista de Inscritos</h1>
-    <p><a th:href="@{/eventos/{id}(id=${eventoId})}">Volver al Evento</a></p>
-    
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Código</th>
-                <th>Correo</th>
-                <th>Fecha Inscripción</th>
-                <th>Confirmada</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="inscrito : ${inscritos}">
-                <td th:text="${inscrito.nombre}"></td>
-                <td th:text="${inscrito.codigoEstudiante}"></td>
-                <td th:text="${inscrito.correo}"></td>
-                <td th:text="${inscrito.fechaInscripcion}"></td>
-                <td th:text="${inscrito.confirmada}"></td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <a th:href="@{/eventos/{id}/inscritos/export(id=${eventoId})}">Exportar CSV</a>
+
+    <nav class="nav">
+        <span class="nav-brand">UniPlan</span>
+        <div class="nav-links">
+            <a th:href="@{/eventos/{id}(id=${eventoId})}">← Volver al Evento</a>
+        </div>
+    </nav>
+
+    <div class="card">
+        <div class="card-header">
+            <h1>Lista de Inscritos</h1>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th>Correo</th>
+                    <th>Fecha Inscripción</th>
+                    <th>Confirmada</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${inscritos.empty}" class="empty-row">
+                    <td colspan="6">No hay inscritos para este evento.</td>
+                </tr>
+                <tr th:each="inscrito : ${inscritos}">
+                    <td class="titulo" th:text="${inscrito.nombre}"></td>
+                    <td class="secundario" th:text="${inscrito.codigoEstudiante}"></td>
+                    <td class="secundario" th:text="${inscrito.correo}"></td>
+                    <td class="secundario" th:text="${inscrito.fechaInscripcion}"></td>
+                    <td>
+                        <span th:if="${inscrito.confirmada}"   class="badge badge-activo">Confirmada</span>
+                        <span th:unless="${inscrito.confirmada}" class="badge badge-borrador">Pendiente</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/eventos/{id}/inscritos/export(id=${eventoId})}" class="ev-link">Exportar CSV</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 </body>
 </html>

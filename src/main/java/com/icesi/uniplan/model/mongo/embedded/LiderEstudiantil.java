@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("datos_lider_estudiantil")
 public class LiderEstudiantil extends DatosEspecificos {
 
     @Field("programa")

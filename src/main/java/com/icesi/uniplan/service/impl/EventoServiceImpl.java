@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,11 +40,11 @@ public class EventoServiceImpl implements IEventoService {
 
     @Override
     public Evento crearEvento(CrearEventoRequest request, String correoOrganizador) {
-        Date ahora = new Date();
-        if (request.getFechaHoraInicio().before(ahora)) {
+        LocalDateTime ahora = LocalDateTime.now();
+        if (request.getFechaHoraInicio().isBefore(ahora)) {
             throw new IllegalArgumentException("La fecha de inicio no puede ser en el pasado");
         }
-        if (!request.getFechaHoraFin().after(request.getFechaHoraInicio())) {
+        if (!request.getFechaHoraFin().isAfter(request.getFechaHoraInicio())) {
             throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
 
@@ -80,13 +80,13 @@ public class EventoServiceImpl implements IEventoService {
     private DatosEspecificos buildDatosEspecificosEvento(CrearEventoRequest request) {
         DatosEspecificosRequest d = request.getDatosEspecificos();
         return switch (request.getTipo()) {
-            case TALLER -> {
+            case taller -> {
                 if (d.getMaterialesRequeridos() == null || d.getCondicionesPrevias() == null) {
                     throw new IllegalArgumentException("Taller requiere materialesRequeridos y condicionesPrevias");
                 }
                 yield new Taller(d.getMaterialesRequeridos(), d.getCondicionesPrevias());
             }
-            case CHARLA -> {
+            case charla -> {
                 if (d.getConferencista() == null || d.getEnlaces() == null) {
                     throw new IllegalArgumentException("Charla requiere conferencista y enlaces");
                 }
@@ -96,7 +96,7 @@ public class EventoServiceImpl implements IEventoService {
                         d.getEnlaces(),
                         d.getDescripcionExtendida() != null ? d.getDescripcionExtendida() : "");
             }
-            case TORNEO -> {
+            case torneo -> {
                 if (d.getTipoDeporte() == null || d.getReglas() == null
                         || d.getNumeroEquipos() == null || d.getEstructuraTorneo() == null) {
                     throw new IllegalArgumentException(
@@ -105,7 +105,7 @@ public class EventoServiceImpl implements IEventoService {
                 yield new TorneoDeportivo(d.getTipoDeporte(), d.getReglas(),
                         d.getNumeroEquipos(), d.getEstructuraTorneo());
             }
-            case VOLUNTARIADO -> {
+            case voluntariado -> {
                 if (d.getCausa() == null || d.getNumeroHorasRequeridas() == null
                         || d.getActividades() == null || d.getPuntosEncuentro() == null
                         || d.getResponsables() == null) {
@@ -115,7 +115,7 @@ public class EventoServiceImpl implements IEventoService {
                 yield new ActividadVoluntariado(d.getCausa(), d.getNumeroHorasRequeridas(),
                         d.getActividades(), d.getPuntosEncuentro(), d.getResponsables());
             }
-            case OTRO -> new OtroEvento(
+            case otro -> new OtroEvento(
                     d.getDescripcionAdicional() != null ? d.getDescripcionAdicional() : "");
         };
     }
@@ -200,7 +200,7 @@ public class EventoServiceImpl implements IEventoService {
                 usuario.getNombre(),
                 correoEstudiante,
                 estudianteDatos.getCodigo(),
-                new Date(),
+                LocalDateTime.now(),
                 false);
 
         evento.getInscripciones().add(inscripcion);
@@ -216,10 +216,10 @@ public class EventoServiceImpl implements IEventoService {
         String codigoEstudiante = estudianteDatos.getCodigo();
 
         switch (evento.getTipo()) {
-            case TALLER -> validarTaller(evento, codigoEstudiante);
-            case TORNEO -> validarTorneo(evento, usuario.getCorreo());
-            case VOLUNTARIADO -> validarVoluntariado(evento, usuario.getCorreo());
-            case CHARLA, OTRO -> { /* Sin validaciones adicionales */ }
+            case taller -> validarTaller(evento, codigoEstudiante);
+            case torneo -> validarTorneo(evento, usuario.getCorreo());
+            case voluntariado -> validarVoluntariado(evento, usuario.getCorreo());
+            case charla, otro -> { /* Sin validaciones adicionales */ }
         }
     }
 
@@ -262,7 +262,7 @@ public class EventoServiceImpl implements IEventoService {
      * Verifica que el estudiante no tenga otro torneo con horario traslapado.
      */
     private void validarTorneo(Evento eventoNuevo, String correoEstudiante) {
-        List<Evento> torneos = eventoRepository.findByTipo(TipoEvento.TORNEO);
+        List<Evento> torneos = eventoRepository.findByTipo(TipoEvento.torneo);
         boolean tieneTraslape = torneos.stream()
                 .filter(t -> !t.getId().equals(eventoNuevo.getId()))
                 .filter(t -> t.getEstado() != EstadoEvento.FINALIZADO
@@ -278,8 +278,8 @@ public class EventoServiceImpl implements IEventoService {
     }
 
     private boolean hayTraslape(Evento e1, Evento e2) {
-        return e1.getFechaHoraInicio().before(e2.getFechaHoraFin())
-                && e2.getFechaHoraInicio().before(e1.getFechaHoraFin());
+        return e1.getFechaHoraInicio().isBefore(e2.getFechaHoraFin())
+                && e2.getFechaHoraInicio().isBefore(e1.getFechaHoraFin());
     }
 
     /**
@@ -290,7 +290,7 @@ public class EventoServiceImpl implements IEventoService {
         ActividadVoluntariado voluntariado = (ActividadVoluntariado) eventoNuevo.getDatosEspecificos();
         int minHoras = voluntariado.getNumeroHorasRequeridas();
 
-        List<Evento> voluntariadosFinalizados = eventoRepository.findByTipo(TipoEvento.VOLUNTARIADO).stream()
+        List<Evento> voluntariadosFinalizados = eventoRepository.findByTipo(TipoEvento.voluntariado).stream()
                 .filter(v -> !v.getId().equals(eventoNuevo.getId()))
                 .filter(v -> v.getEstado() == EstadoEvento.FINALIZADO)
                 .collect(Collectors.toList());
@@ -369,16 +369,16 @@ public class EventoServiceImpl implements IEventoService {
     @Override
     @Scheduled(fixedRate = 60_000)
     public void actualizarEstadosEventos() {
-        Date ahora = new Date();
+        LocalDateTime ahora = LocalDateTime.now();
         List<Evento> eventos = eventoRepository.findAll();
 
         for (Evento evento : eventos) {
             if (evento.getEstado() == EstadoEvento.CANCELADO) continue;
 
             EstadoEvento nuevoEstado;
-            if (ahora.before(evento.getFechaHoraInicio())) {
+            if (ahora.isBefore(evento.getFechaHoraInicio())) {
                 nuevoEstado = EstadoEvento.PROGRAMADO;
-            } else if (ahora.before(evento.getFechaHoraFin())) {
+            } else if (ahora.isBefore(evento.getFechaHoraFin())) {
                 nuevoEstado = EstadoEvento.ACTIVO;
             } else {
                 nuevoEstado = EstadoEvento.FINALIZADO;

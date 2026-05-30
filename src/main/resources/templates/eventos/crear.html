@@ -4,75 +4,356 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Evento - UniPlan</title>
-    <link rel="stylesheet" th:href="@{/css/eventos/crear-evento.css}">
+
+    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
 </head>
+
 <body>
-    <div class="event-card">
 
-        <div class="card-header">
-            <h1>Crear nuevo evento</h1>
-            <a href="/eventos/mis-eventos" class="back-link">← Volver a mis eventos</a>
-        </div>
+<div class="nav">
 
-        <div th:if="${error}" class="alert alert-error">
-            <span th:text="${error}"></span>
-        </div>
-        <div th:if="${success}" class="alert alert-success">
-            <span th:text="${success}"></span>
-        </div>
+    <span class="nav-brand">
+        UniPlan
+    </span>
 
-        <form action="/eventos/crear" method="post" th:object="${request}">
+    <div class="nav-links">
 
-            <div class="field">
-                <label for="titulo">Título</label>
-                <input type="text" id="titulo" name="titulo"
-                    th:field="*{titulo}" placeholder="Nombre del evento" required>
-            </div>
+        <a th:href="@{/eventos}">
+            Catálogo de Eventos
+        </a>
 
-            <div class="field">
-                <label for="descripcion">Descripción</label>
-                <textarea id="descripcion" name="descripcion"
-                        th:field="*{descripcion}" placeholder="Describe el evento..." required></textarea>
-            </div>
+        <a th:href="@{/eventos/mis-eventos}">
+            Mis Eventos
+        </a>
 
-            <div class="field">
-                <label for="tipo">Tipo de evento</label>
-                <select id="tipo" name="tipo" th:field="*{tipo}" required>
-                    <option value="" disabled selected>Selecciona un tipo</option>
-                    <option th:each="tipo : ${tiposEvento}"
-                            th:value="${tipo}" th:text="${tipo}"></option>
-                </select>
-            </div>
+        <a th:href="@{/logout}" class="logout">
+            Cerrar Sesión
+        </a>
 
-            <div class="field-row">
-                <div class="field">
-                    <label for="fechaHoraInicio">Fecha de inicio</label>
-                    <input type="datetime-local" id="fechaHoraInicio"
-                        name="fechaHoraInicio" th:field="*{fechaHoraInicio}" required>
-                </div>
-                <div class="field">
-                    <label for="fechaHoraFin">Fecha de fin</label>
-                    <input type="datetime-local" id="fechaHoraFin"
-                        name="fechaHoraFin" th:field="*{fechaHoraFin}" required>
-                </div>
-            </div>
-
-            <div class="field-row">
-                <div class="field">
-                    <label for="ubicacion">Ubicación</label>
-                    <input type="text" id="ubicacion" name="ubicacion"
-                        th:field="*{ubicacion}" placeholder="Ej: Auditorio A" required>
-                </div>
-                <div class="field">
-                    <label for="maxAsistentes">Máximo de asistentes</label>
-                    <input type="number" id="maxAsistentes" name="maxAsistentes"
-                        th:field="*{maxAsistentes}" placeholder="Ej: 100" min="1" required>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit">Crear evento</button>
-
-        </form>
     </div>
+
+</div>
+
+<div th:if="${error}" class="alert alert-error">
+    <span th:text="${error}"></span>
+</div>
+
+<div th:if="${success}" class="alert alert-success">
+    <span th:text="${success}"></span>
+</div>
+
+<div class="card">
+
+    <div class="card-header">
+        <h1>Crear nuevo evento</h1>
+    </div>
+
+    <form th:action="@{/eventos/crear}"
+          method="post"
+          th:object="${request}"
+          class="evento-form">
+
+        <table class="form-table">
+
+            <tbody>
+
+            <!-- TITULO -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="titulo">
+                        Título
+                    </label>
+                </td>
+
+                <td>
+                    <input type="text"
+                           id="titulo"
+                           th:field="*{titulo}"
+                           placeholder="Nombre del evento"
+                           required>
+                </td>
+
+            </tr>
+
+            <!-- DESCRIPCION -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="descripcion">
+                        Descripción
+                    </label>
+                </td>
+
+                <td>
+                    <textarea id="descripcion"
+                              th:field="*{descripcion}"
+                              placeholder="Describe el evento..."
+                              required></textarea>
+                </td>
+
+            </tr>
+
+            <!-- TIPO -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="tipo">
+                        Tipo de evento
+                    </label>
+                </td>
+
+                <td>
+
+                    <select id="tipo"
+                            th:field="*{tipo}"
+                            required>
+
+                        <option value="">
+                            Selecciona un tipo
+                        </option>
+
+                        <option th:each="tipo : ${tiposEvento}"
+                                th:value="${tipo.name()}"
+                                th:text="${tipo.dbValue}">
+                        </option>
+
+                    </select>
+
+                </td>
+
+            </tr>
+
+            <!-- FECHA INICIO -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="fechaHoraInicio">
+                        Fecha de inicio
+                    </label>
+                </td>
+
+                <td>
+                    <input type="datetime-local"
+                           id="fechaHoraInicio"
+                           th:field="*{fechaHoraInicio}"
+                           required>
+                </td>
+
+            </tr>
+
+            <!-- FECHA FIN -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="fechaHoraFin">
+                        Fecha de fin
+                    </label>
+                </td>
+
+                <td>
+                    <input type="datetime-local"
+                           id="fechaHoraFin"
+                           th:field="*{fechaHoraFin}"
+                           required>
+                </td>
+
+            </tr>
+
+            <!-- UBICACION -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="ubicacion">
+                        Ubicación
+                    </label>
+                </td>
+
+                <td>
+                    <input type="text"
+                           id="ubicacion"
+                           th:field="*{ubicacion}"
+                           placeholder="Ej: Auditorio Argos"
+                           required>
+                </td>
+
+            </tr>
+
+            <!-- MAX ASISTENTES -->
+
+            <tr>
+
+                <td class="titulo">
+                    <label for="maxAsistentes">
+                        Máximo de asistentes
+                    </label>
+                </td>
+
+                <td>
+                    <input type="number"
+                           id="maxAsistentes"
+                           th:field="*{maxAsistentes}"
+                           min="1"
+                           placeholder="Ej: 100"
+                           required>
+                </td>
+
+            </tr>
+
+            <!-- CHARLA -->
+                <tbody id="campos-charla" style="display:none;">
+                    <tr>
+                        <td class="titulo"><label>Nombre del conferencista</label></td>
+                        <td><input type="text" name="datosEspecificos.conferencista.nombre" placeholder="Nombre del ponente"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Perfil</label></td>
+                        <td><input type="text" name="datosEspecificos.conferencista.perfil" placeholder="Perfil profesional"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Afiliación</label></td>
+                        <td><input type="text" name="datosEspecificos.conferencista.afiliacion" placeholder="Universidad o empresa"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Descripción extendida</label></td>
+                        <td><input type="text" name="datosEspecificos.descripcionExtendida" placeholder="Tema principal"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Enlace</label></td>
+                        <td><input type="text" name="datosEspecificos.enlaces[0]" placeholder="https://..."></td>
+                    </tr>
+                </tbody>
+
+                <!-- TALLER -->
+                <tbody id="campos-taller" style="display:none;">
+                    <tr>
+                        <td class="titulo"><label>Material requerido</label></td>
+                        <td><input type="text" name="datosEspecificos.materialesRequeridos[0]" placeholder="Ej: Laptop"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Condición previa</label></td>
+                        <td><input type="text" name="datosEspecificos.condicionesPrevias[0]" placeholder="Ej: SEMESTRE:3"></td>
+                    </tr>
+                </tbody>
+
+                <!-- TORNEO -->
+                <tbody id="campos-torneo" style="display:none;">
+                    <tr>
+                        <td class="titulo"><label>Tipo de deporte</label></td>
+                        <td><input type="text" name="datosEspecificos.tipoDeporte" placeholder="Ej: Fútbol"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Número de equipos</label></td>
+                        <td><input type="number" name="datosEspecificos.numeroEquipos" min="2"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Estructura del torneo</label></td>
+                        <td><input type="text" name="datosEspecificos.estructuraTorneo" placeholder="Ej: Eliminación directa"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Regla principal</label></td>
+                        <td><input type="text" name="datosEspecificos.reglas[0]" placeholder="Ej: No contacto físico"></td>
+                    </tr>
+                </tbody>
+
+                <!-- VOLUNTARIADO -->
+                <tbody id="campos-voluntariado" style="display:none;">
+                    <tr>
+                        <td class="titulo"><label>Causa</label></td>
+                        <td><input type="text" name="datosEspecificos.causa" placeholder="Ej: Medio ambiente"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Horas requeridas</label></td>
+                        <td><input type="number" name="datosEspecificos.numeroHorasRequeridas" min="1"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Actividad principal</label></td>
+                        <td><input type="text" name="datosEspecificos.actividades[0]" placeholder="Ej: Reforestación"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Punto de encuentro</label></td>
+                        <td><input type="text" name="datosEspecificos.puntosEncuentro[0]" placeholder="Ej: Entrada principal"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo"><label>Responsable</label></td>
+                        <td><input type="text" name="datosEspecificos.responsables[0]" placeholder="Nombre del responsable"></td>
+                    </tr>
+                </tbody>
+
+            </tbody>
+
+        </table>
+
+        <div class="form-actions">
+
+            <button type="submit"
+                    class="badge badge-activo btn-submit">
+
+                Crear evento
+
+            </button>
+
+            <a th:href="@{/eventos/mis-eventos}"
+               class="ev-link">
+
+                Cancelar
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    const tipoSelect = document.getElementById("tipo");
+
+    const charla = document.getElementById("campos-charla");
+    const taller = document.getElementById("campos-taller");
+    const torneo = document.getElementById("campos-torneo");
+    const voluntariado = document.getElementById("campos-voluntariado");
+
+    function ocultarTodos() {
+
+        charla.style.display = "none";
+        taller.style.display = "none";
+        torneo.style.display = "none";
+        voluntariado.style.display = "none";
+    }
+
+    tipoSelect.addEventListener("change", function () {
+
+        ocultarTodos();
+
+        switch (this.value) {
+
+            case "charla":
+                charla.style.display = "table-row-group";
+                break;
+
+            case "taller":
+                taller.style.display = "table-row-group";
+                break;
+
+            case "torneo":
+                torneo.style.display = "table-row-group";
+                break;
+
+            case "voluntariado":
+                voluntariado.style.display = "table-row-group";
+                break;
+        }
+    });
+
+</script>
+
 </body>
 </html>

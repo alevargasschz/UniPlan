@@ -5,6 +5,7 @@ import com.icesi.uniplan.model.mongo.enums.EstadoEvento;
 import com.icesi.uniplan.model.mongo.enums.TipoEvento;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -13,8 +14,8 @@ public class EventoResponse {
     private String titulo;
     private String descripcion;
     private TipoEvento tipo;
-    private Date fechaHoraInicio;
-    private Date fechaHoraFin;
+    private LocalDateTime fechaHoraInicio;
+    private LocalDateTime fechaHoraFin;
     private String ubicacion;
     private Integer maxAsistentes;
     private Integer totalInscritos;

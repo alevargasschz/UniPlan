@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -31,7 +32,7 @@ public class Inscripcion {
     private String codigoEstudiante;
     
     @Field("fecha_inscripcion")
-    private Date fechaInscripcion;
+    private LocalDateTime fechaInscripcion;
     
     @Field("confirmada")
     private Boolean confirmada;

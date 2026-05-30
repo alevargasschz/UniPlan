@@ -10,7 +10,6 @@ import org.springframework.data.annotation.TypeAlias;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("datos_estudiante")
 public class Estudiante extends DatosEspecificos {
 
     private String codigo;

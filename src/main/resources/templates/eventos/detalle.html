@@ -3,26 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>Detalle Evento - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
 </head>
 <body>
-    <h1 th:text="${evento.titulo}">Detalle del Evento</h1>
-    <p><a href="/eventos">Volver al catálogo</a></p>
-    
-    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
-    <div th:if="${success}" th:text="${success}" style="color: green;"></div>
-    
-    <p><strong>Descripción:</strong> <span th:text="${evento.descripcion}"></span></p>
-    <p><strong>Tipo:</strong> <span th:text="${evento.tipo}"></span></p>
-    <p><strong>Fecha Inicio:</strong> <span th:text="${evento.fechaHoraInicio}"></span></p>
-    <p><strong>Fecha Fin:</strong> <span th:text="${evento.fechaHoraFin}"></span></p>
-    <p><strong>Ubicación:</strong> <span th:text="${evento.ubicacion}"></span></p>
-    <p><strong>Cupos Disponibles:</strong> <span th:text="${evento.cuposDisponibles}"></span></p>
-    <p><strong>Total Inscritos:</strong> <span th:text="${evento.totalInscritos}"></span></p>
-    <p><strong>Estado:</strong> <span th:text="${evento.estado}"></span></p>
-    <p><strong>Organizador:</strong> <span th:text="${evento.organizadorNombre}"></span></p>
-    
-    <form th:action="@{/inscripciones/{id}(id=${evento.id})}" method="post">
-        <button type="submit">Inscribirse</button>
-    </form>
+
+  <div class="nav">
+    <span class="nav-brand">UniPlan</span>
+    <div class="nav-links">
+      <a th:href="@{/eventos}">Catálogo de Eventos</a>
+      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+    </div>
+  </div>
+
+  <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1 th:text="${evento.titulo}">Detalle del Evento</h1>
+    </div>
+
+    <table>
+      <tbody>
+        <tr>
+          <td class="titulo">Descripción</td>
+          <td class="secundario" th:text="${evento.descripcion}"></td>
+        </tr>
+        <tr>
+          <td class="titulo">Tipo</td>
+          <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
+        </tr>
+        <tr>
+          <td class="titulo">Fecha Inicio</td>
+          <td class="secundario"
+              th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
+        </tr>
+        <tr>
+          <td class="titulo">Fecha Fin</td>
+          <td class="secundario"
+              th:text="${#temporals.format(evento.fechaHoraFin,'dd/MM/yyyy HH:mm')}"></td>
+        </tr>
+        <tr>
+          <td class="titulo">Ubicación</td>
+          <td class="secundario" th:text="${evento.ubicacion}"></td>
+        </tr>
+        <tr>
+          <td class="titulo">Cupos Disponibles</td>
+          <td th:text="${evento.cuposDisponibles}"
+              th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
+        </tr>
+        <tr>
+          <td class="titulo">Total Inscritos</td>
+          <td class="secundario" th:text="${evento.totalInscritos}"></td>
+        </tr>
+        <tr>
+          <td class="titulo">Estado</td>
+          <td>
+            <span class="badge"
+                  th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
+                  th:text="${evento.estado}"></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="titulo">Organizador</td>
+          <td class="secundario" th:text="${evento.organizadorNombre}"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="padding: 1.25rem 1.5rem; border-top: 0.5px solid rgba(0,0,0,0.08);">
+      <form th:action="@{/inscripciones/{id}(id=${evento.id})}" method="post">
+        <button type="submit" class="badge badge-activo"
+                style="cursor: pointer; border: none; padding: 8px 16px; font-size: 13px; border-radius: 8px;">
+          Inscribirse
+        </button>
+      </form>
+    </div>
+  </div>
+
 </body>
 </html>

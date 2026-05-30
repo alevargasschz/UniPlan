@@ -13,13 +13,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,32 +61,48 @@ public class EventoController {
     // -------------------------------------------------------------------------
 
     @GetMapping("/crear")
-    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
-    public String crearEventoForm(Model model) {
+public String crearEventoForm(Model model) {
+    if (!model.containsAttribute("request")) {
         model.addAttribute("request", new CrearEventoRequest());
-        model.addAttribute("tiposEvento", TipoEvento.values());
-        return "eventos/crear";
     }
+    model.addAttribute("tiposEvento", TipoEvento.values());
+    return "eventos/crear";
+}
 
     @PostMapping("/crear")
-    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
     public String crearEvento(
-            @Valid @ModelAttribute CrearEventoRequest request,
+            @Valid @ModelAttribute("request") CrearEventoRequest request,
+            BindingResult bindingResult,
+            Model model,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
+        if (bindingResult.hasErrors()) {
+            bindingResult.getFieldErrors().forEach(error -> {
+                System.out.println("Campo: " + error.getField());
+                System.out.println("Valor: " + error.getRejectedValue());
+                System.out.println("Error: " + error.getDefaultMessage());
+            });
+            model.addAttribute("tiposEvento", TipoEvento.values());
+            model.addAttribute("error", "Por favor corrige los errores del formulario.");
+            System.out.println("[EventoController] Errores de validación");
+            return "eventos/crear";
+        }
+
         try {
+            System.out.println("[EventoController] Se paso la validacion");
             Evento evento = eventoService.crearEvento(request, authentication.getName());
             redirectAttributes.addFlashAttribute("success", "Evento creado exitosamente");
             return "redirect:/eventos/" + evento.getId();
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/eventos/crear";
+            System.out.println("[EventoController] Error al crear evento: " + e.getMessage());
+            model.addAttribute("tiposEvento", TipoEvento.values());
+            model.addAttribute("error", e.getMessage());
+            return "eventos/crear"; // forward, no redirect → conserva datos
         }
     }
 
     @GetMapping("/mis-eventos")
-    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
     public String misEventos(Authentication authentication, Model model) {
         List<EventoResumenResponse> eventos = eventoService.listarEventosPorOrganizador(authentication.getName())
                 .stream().map(this::toResumen).collect(Collectors.toList());
@@ -96,7 +111,6 @@ public class EventoController {
     }
 
     @GetMapping("/{id}/inscritos")
-    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
     public String listarInscritos(
             @PathVariable String id, Authentication authentication, Model model) {
 
@@ -108,7 +122,6 @@ public class EventoController {
     }
 
     @GetMapping("/{id}/inscritos/export")
-    @PreAuthorize("hasAnyRole('PROFESOR', 'LIDER_ESTUDIANTIL', 'BIENESTAR')")
     public ResponseEntity<String> exportarInscritos(@PathVariable String id, Authentication authentication) {
         String csv = eventoService.exportarInscritosCSV(id, authentication.getName());
         return ResponseEntity.ok()

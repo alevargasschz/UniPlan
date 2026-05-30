@@ -1,7 +1,5 @@
 package com.icesi.uniplan.support;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icesi.uniplan.dto.request.CrearEventoRequest;
 import com.icesi.uniplan.dto.request.DatosEspecificosRequest;
 import com.icesi.uniplan.dto.request.ConferencistaRequest;
@@ -14,7 +12,6 @@ import com.icesi.uniplan.model.postgres.*;
 import com.icesi.uniplan.repository.mongo.IEventoRepository;
 import com.icesi.uniplan.repository.mongo.IUsuarioRepository;
 import com.icesi.uniplan.repository.postgres.*;
-import com.icesi.uniplan.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,11 +37,6 @@ public abstract class IntegrationTestSupport {
     protected WebApplicationContext webApplicationContext;
 
     protected MockMvc mockMvc;
-
-    protected ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    protected JwtUtil jwtUtil;
 
     @Autowired
     protected PasswordEncoder passwordEncoder;
@@ -142,18 +135,6 @@ public abstract class IntegrationTestSupport {
                 .build());
     }
 
-    protected String bearerTokenFor(Usuario usuario) {
-        return "Bearer " + jwtUtil.generateToken(usuario.getCorreo(), usuario.getTipo().name());
-    }
-
-    protected String bearerTokenFor(String correo, TipoUsuario tipo) {
-        return "Bearer " + jwtUtil.generateToken(correo, tipo.name());
-    }
-
-    protected String toJson(Object payload) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(payload);
-    }
-
     protected Date futureDateOffset(long minutes) {
         return Date.from(ZonedDateTime.now(ZoneId.systemDefault()).plusMinutes(minutes).toInstant());
     }
@@ -221,19 +202,20 @@ public abstract class IntegrationTestSupport {
         return enrollmentRepository.save(enrollment);
     }
 
-    protected CrearEventoRequest baseEventRequest(TipoEvento tipo, String title, String description, Date start, Date end,
-                                                   Integer maxAsistentes, DatosEspecificosRequest datosEspecificos) {
-        CrearEventoRequest request = new CrearEventoRequest();
-        request.setTitulo(title);
-        request.setDescripcion(description);
-        request.setTipo(tipo);
-        request.setFechaHoraInicio(start);
-        request.setFechaHoraFin(end);
-        request.setUbicacion("Auditorio Icesi");
-        request.setMaxAsistentes(maxAsistentes);
-        request.setDatosEspecificos(datosEspecificos);
-        return request;
-    }
+    protected CrearEventoRequest baseEventRequest(TipoEvento tipo, String title, String description, 
+                                               LocalDateTime start, LocalDateTime end,
+                                               Integer maxAsistentes, DatosEspecificosRequest datosEspecificos) {
+    CrearEventoRequest request = new CrearEventoRequest();
+    request.setTitulo(title);
+    request.setDescripcion(description);
+    request.setTipo(tipo);
+    request.setFechaHoraInicio(start);
+    request.setFechaHoraFin(end);
+    request.setUbicacion("Auditorio Icesi");
+    request.setMaxAsistentes(maxAsistentes);
+    request.setDatosEspecificos(datosEspecificos);
+    return request;
+}
 
     protected DatosEspecificosRequest tallerData(String... previas) {
         DatosEspecificosRequest datos = new DatosEspecificosRequest();

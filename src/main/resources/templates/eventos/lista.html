@@ -1,40 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Eventos - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
 </head>
 <body>
-    <h1>Catálogo de Eventos</h1>
-    <p><a href="/eventos/mis-eventos">Mis Eventos</a></p>
-    <p><a href="/reportes/mis-inscripciones">Mis Inscripciones</a></p>
-    <p><a href="/logout">Cerrar Sesión</a></p>
-    
-    <table border="1">
-        <thead>
+  <div class="nav">
+    <span class="nav-brand">UniPlan</span>
+    <div class="nav-links">
+      <a th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
+      <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
+      <a sec:authorize="hasAnyRole('BIENESTAR', 'PROFESOR')" th:href="@{/reportes/estadisticas}">Estadisticas</a>
+      <a sec:authorize="hasAnyRole('BIENESTAR')" th:href="@{/admin/organizadores}">Organizadores</a>
+      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h1>Catálogo de Eventos</h1></div>
+    <table>
+      <thead>
             <tr>
                 <th>Título</th>
                 <th>Tipo</th>
-                <th>Fecha Inicio</th>
+                <th>Fecha y Hora</th>
                 <th>Ubicación</th>
                 <th>Cupos</th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <th></th>
             </tr>
         </thead>
-        <tbody>
-            <tr th:each="evento : ${eventos}">
-                <td th:text="${evento.titulo}"></td>
-                <td th:text="${evento.tipo}"></td>
-                <td th:text="${evento.fechaHoraInicio}"></td>
-                <td th:text="${evento.ubicacion}"></td>
-                <td th:text="${evento.cuposDisponibles}"></td>
-                <td th:text="${evento.estado}"></td>
-                <td>
-                    <a th:href="@{/eventos/{id}(id=${evento.id})}">Ver Detalle</a>
-                </td>
-            </tr>
-        </tbody>
+      <tbody>
+        <tr th:each="evento : ${eventos}">
+          <td class="titulo" th:text="${evento.titulo}"></td>
+          <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
+          <td class="secundario"
+              th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
+          <td class="secundario" th:text="${evento.ubicacion}"></td>
+          <td th:text="${evento.cuposDisponibles}"
+              th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
+                  th:text="${evento.estado}"></span>
+          </td>
+          <td><a class="ev-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver detalle</a></td>
+        </tr>
+        <tr class="empty-row" th:if="${#lists.isEmpty(eventos)}">
+          <td colspan="7">No hay eventos disponibles.</td>
+        </tr>
+      </tbody>
     </table>
+  </div>
 </body>
 </html>

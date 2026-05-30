@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("detalles_torneo")
+
 public class TorneoDeportivo extends DatosEspecificos {
 
     @Field("tipo_deporte")

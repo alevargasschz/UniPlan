@@ -17,7 +17,7 @@ public class MongoUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SecurityAuthority("ROLE_" + usuario.getTipo().name()));
+       return List.of(new SecurityAuthority("ROLE_" + usuario.getTipo().name()));
     }
 
     @Override

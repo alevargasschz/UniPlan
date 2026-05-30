@@ -17,7 +17,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeAlias("detalles_voluntariado")
 public class ActividadVoluntariado extends DatosEspecificos {
 
     @Field("causa")

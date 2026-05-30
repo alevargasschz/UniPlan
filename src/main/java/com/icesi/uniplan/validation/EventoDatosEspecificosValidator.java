@@ -26,11 +26,11 @@ public class EventoDatosEspecificosValidator implements ConstraintValidator<Even
         }
 
         boolean valid = switch (tipo) {
-            case TALLER -> datos_especificos instanceof Taller;
-            case CHARLA -> datos_especificos instanceof Charla;
-            case TORNEO -> datos_especificos instanceof TorneoDeportivo;
-            case VOLUNTARIADO -> datos_especificos instanceof ActividadVoluntariado;
-            case OTRO -> true;
+            case taller -> datos_especificos instanceof Taller;
+            case charla -> datos_especificos instanceof Charla;
+            case torneo -> datos_especificos instanceof TorneoDeportivo;
+            case voluntariado -> datos_especificos instanceof ActividadVoluntariado;
+            case otro -> true;
         };
 
         if (!valid) {

@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TipoEvento {
-    TALLER("taller"),
-    CHARLA("charla"),
-    TORNEO("torneo"),
-    VOLUNTARIADO("voluntariado"),
-    OTRO("otro");
+    taller("taller"),
+    charla("charla"),
+    torneo("torneo"),
+    voluntariado("voluntariado"),
+    otro("otro");
 
     private final String dbValue;
 

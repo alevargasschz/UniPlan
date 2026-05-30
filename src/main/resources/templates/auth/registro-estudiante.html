@@ -22,7 +22,7 @@
             <span th:text="${success}"></span>
         </div>
 
-        <form action="/public/auth/registro/estudiante" method="post" th:object="${request}">
+        <form th:action=@{/public/auth/registro/estudiante} method="post" th:object="${request}">
 
             <div class="field">
                 <label for="correo">Correo electrónico</label>
@@ -55,7 +55,7 @@
         <div class="divider">o</div>
 
         <p class="login-row">
-            ¿Ya tienes cuenta? <a href="/public/auth/login">Iniciar sesión</a>
+            ¿Ya tienes cuenta? <a th:href=@{/public/auth/login}>Iniciar sesión</a>
         </p>
 
     </div>

@@ -3,30 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Mis Inscripciones - UniPlan</title>
+    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
 </head>
 <body>
-    <h1>Mis Inscripciones</h1>
-    <p><a href="/eventos">Volver a Eventos</a></p>
-    
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Tipo</th>
-                <th>Fecha Inicio</th>
-                <th>Ubicación</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="evento : ${eventos}">
-                <td th:text="${evento.titulo}"></td>
-                <td th:text="${evento.tipo}"></td>
-                <td th:text="${evento.fechaHoraInicio}"></td>
-                <td th:text="${evento.ubicacion}"></td>
-                <td th:text="${evento.estado}"></td>
-            </tr>
-        </tbody>
+
+  <div class="nav">
+    <span class="nav-brand">UniPlan</span>
+    <div class="nav-links">
+      <a th:href="@{/eventos}">Catálogo de Eventos</a>
+      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>Mis Inscripciones</h1>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Tipo</th>
+          <th>Fecha Inicio</th>
+          <th>Ubicación</th>
+          <th>Estado</th>
+          <th> </th>
+          <th> </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="evento : ${eventos}">
+          <td class="titulo" th:text="${evento.titulo}"></td>
+          <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
+          <td class="secundario"
+              th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
+          <td class="secundario" th:text="${evento.ubicacion}"></td>
+          <td>
+            <span class="badge"
+                  th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
+                  th:text="${evento.estado}"></span>
+          </td>
+          <td><a class="ev-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver detalle</a></td>
+          <td><form th:action="@{/inscripciones/{id}/cancelar(id=${evento.id})}" method="post">
+                <button class="ev-link" type="submit">Eliminar</button>
+              </form>
+          </td>
+        </tr>
+        <tr class="empty-row" th:if="${#lists.isEmpty(eventos)}">
+          <td colspan="5">No tienes inscripciones aún.</td>
+        </tr>
+      </tbody>
     </table>
+  </div>
+
 </body>
 </html>
