@@ -1,63 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Estudiante - UniPlan</title>
-    <link rel="stylesheet" th:href="@{/css/auth/registro-estudiante.css}">
-</head>
-<body>
-    <div class="register-card">
 
-        <div class="register-icon">
-            <i>✦</i>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registro Estudiante - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/auth/registro-estudiante.css}">
+    </head>
+
+    <body>
+        <div class="register-card">
+
+            <div class="register-icon">
+                <i>✦</i>
+            </div>
+            <h1>Crear cuenta</h1>
+            <p class="register-sub">Completa los datos para registrarte</p>
+
+            <div class="alert alert-info">
+                <span>Usa datos institucionales válidos. El nombre se obtiene automáticamente desde la base
+                    institucional.</span>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <span th:text="${error}"></span>
+            </div>
+            <div th:if="${success}" class="alert alert-success">
+                <span th:text="${success}"></span>
+            </div>
+
+            <form th:action="@{/public/auth/registro/estudiante}" method="post" th:object="${request}"
+                aria-label="Formulario de registro de estudiante">
+
+                <div class="field">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="text" id="correo" name="correo" th:field="*{correo}" placeholder="tu@correo.com"
+                        autocomplete="email" required>
+                    <small class="helper-text">Debe coincidir con el correo del estudiante en la base
+                        institucional.</small>
+                </div>
+
+                <div class="field">
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" name="contrasena" th:field="*{contrasena}"
+                        placeholder="••••••••" autocomplete="new-password" required>
+                    <small class="helper-text">Mínimo 8 caracteres.</small>
+                </div>
+
+                <div class="field">
+                    <label for="codigoEstudiantil">Código estudiantil</label>
+                    <input type="text" id="codigoEstudiantil" name="codigoEstudiantil" th:field="*{codigoEstudiantil}"
+                        placeholder="Ej: 20231234" required>
+                    <small class="helper-text">Este código se valida contra la base relacional institucional.</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Crear cuenta</button>
+
+            </form>
+
+            <div class="divider">o</div>
+
+            <p class="login-row">
+                ¿Ya tienes cuenta? <a th:href="@{/public/auth/login}">Iniciar sesión</a>
+            </p>
+
         </div>
-        <h1>Crear cuenta</h1>
-        <p class="register-sub">Completa los datos para registrarte</p>
+    </body>
 
-        <div th:if="${error}" class="alert alert-error">
-            <span th:text="${error}"></span>
-        </div>
-        <div th:if="${success}" class="alert alert-success">
-            <span th:text="${success}"></span>
-        </div>
-
-        <form th:action=@{/public/auth/registro/estudiante} method="post" th:object="${request}">
-
-            <div class="field">
-                <label for="correo">Correo electrónico</label>
-                <input type="text" id="correo" name="correo"
-                    th:field="*{correo}" placeholder="tu@correo.com" required>
-            </div>
-
-            <div class="field">
-                <label for="nombre">Nombre completo</label>
-                <input type="text" id="nombre" name="nombre"
-                    th:field="*{nombre}" placeholder="Tu nombre" required>
-            </div>
-
-            <div class="field">
-                <label for="contrasena">Contraseña</label>
-                <input type="password" id="contrasena" name="contrasena"
-                    th:field="*{contrasena}" placeholder="••••••••" required>
-            </div>
-
-            <div class="field">
-                <label for="codigoEstudiantil">Código estudiantil</label>
-                <input type="text" id="codigoEstudiantil" name="codigoEstudiantil"
-                    th:field="*{codigoEstudiantil}" placeholder="Ej: 20231234" required>
-            </div>
-
-            <button type="submit" class="btn-submit">Crear cuenta</button>
-
-        </form>
-
-        <div class="divider">o</div>
-
-        <p class="login-row">
-            ¿Ya tienes cuenta? <a th:href=@{/public/auth/login}>Iniciar sesión</a>
-        </p>
-
-    </div>
-</body>
 </html>

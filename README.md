@@ -579,6 +579,48 @@ El sistema deberá garantizar consistencia entre los datos transaccionales y las
 
 El sistema deberá generar al menos dos reportes administrativos o informativos de valor para los usuarios.
 
+#### RF37 - Administración de organizadores
+
+El administrador del sistema deberá poder:
+
+* Registrar organizadores
+* Consultar organizadores
+* Gestionar organizadores
+
+#### RF38 - Restricción de acceso a información personal
+
+El sistema deberá permitir visualizar información personal de estudiantes inscritos únicamente a:
+
+* Organizadores del evento correspondiente
+* Personal autorizado
+
+#### RF39 - Validación institucional de organizadores
+
+El sistema deberá validar la existencia del organizador en la base de datos institucional antes de permitir su registro.
+
+#### RF40 - Publicación de eventos
+
+Los organizadores podrán publicar eventos una vez se validen:
+
+* Fecha válida
+* Cupos mayores a cero
+
+#### RF41 - Registro de asistencia
+
+Los organizadores deberán poder registrar la asistencia de los estudiantes inscritos a un evento.
+
+#### RF42 - Consulta de horas de voluntariado
+
+El sistema deberá consultar la información necesaria para validar el cumplimiento de horas requeridas antes de permitir la inscripción.
+
+#### RF43 - Consulta de base institucional
+
+El sistema deberá utilizar la base de datos institucional únicamente para consultas de validación, sin modificar su estructura ni sus datos.
+
+#### RF44 - Consulta restringida de inscritos
+
+Los organizadores únicamente podrán consultar la lista de inscritos de los eventos que hayan creado o administren.
+
 ---
 
 ### Requerimientos No Funcionales

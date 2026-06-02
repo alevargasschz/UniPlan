@@ -12,6 +12,12 @@ public interface IUsuarioService {
 
     Usuario registrarOrganizador(RegistroOrganizadorRequest request);
 
+    Usuario actualizarOrganizador(String organizadorId, RegistroOrganizadorRequest request);
+
+    void eliminarOrganizador(String organizadorId);
+
+    Usuario obtenerOrganizadorPorId(String organizadorId);
+
     List<Usuario> listarOrganizadores(TipoUsuario tipo);
 
     Usuario obtenerPorCorreo(String correo);

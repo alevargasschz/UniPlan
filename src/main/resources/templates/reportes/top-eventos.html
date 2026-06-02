@@ -1,52 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Top Eventos - UniPlan</title>
-    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-  <div class="nav">
-    <span class="nav-brand">UniPlan</span>
-    <div class="nav-links">
-      <a th:href="@{/eventos}">Catálogo de Eventos</a>
-      <a th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
-      <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
-      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
-    </div>
-  </div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Top Eventos - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+    </head>
 
-  <div class="card">
-    <div class="card-header">
-    <a class="ev-link" th:href="@{/reportes/estadisticas}" >Estadísticas</a>
-      <h1>Top Eventos por Ocupación</h1>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Título</th>
-          <th>Tipo</th>
-          <th>Inscritos</th>
-          <th>Máx. Asistentes</th>
-          <th>% Ocupación</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="est : ${estadisticas}">
-          <td class="titulo" th:text="${est.titulo}"></td>
-          <td><span class="badge badge-tipo" th:text="${est.tipo}"></span></td>
-          <td th:text="${est.totalInscritos}"></td>
-          <td class="secundario" th:text="${est.maxAsistentes}"></td>
-          <td th:text="${est.porcentajeOcupacion} + '%'"
-              th:classappend="${est.porcentajeOcupacion ge 90} ? 'cupos-low'"></td>
-        </tr>
-        <tr class="empty-row" th:if="${#lists.isEmpty(estadisticas)}">
-          <td colspan="5">No hay estadísticas disponibles.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <body>
 
-</body>
+        <div class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Informe administrativo de demanda y ocupación de eventos.</span>
+            <div class="nav-links">
+                <a th:href="@{/eventos}">Catálogo de Eventos</a>
+                <a sec:authorize="hasAnyRole('PROFESOR','LIDER_ESTUDIANTIL','BIENESTAR')"
+                    th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
+                <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
+                <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <a sec:authorize="hasAnyRole('PROFESOR','LIDER_ESTUDIANTIL','BIENESTAR')" class="ev-link"
+                    th:href="@{/reportes/estadisticas}">Estadísticas</a>
+                <h1>Top Eventos por Ocupación</h1>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Eventos en ranking: ' + ${#lists.size(estadisticas)}"></span>
+                <span class="summary-pill">Métrica principal: % ocupación</span>
+            </div>
+            <div class="section-hint">Eventos con ocupación alta pueden requerir más cupos o nuevas ediciones.</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Inscritos</th>
+                        <th>Máx. Asistentes</th>
+                        <th>% Ocupación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="est : ${estadisticas}">
+                        <td class="titulo" th:text="${est.titulo}"></td>
+                        <td><span class="badge badge-tipo" th:text="${est.tipo}"></span></td>
+                        <td th:text="${est.totalInscritos}"></td>
+                        <td class="secundario" th:text="${est.maxAsistentes}"></td>
+                        <td th:text="${est.porcentajeOcupacion} + '%'"
+                            th:classappend="${est.porcentajeOcupacion ge 90} ? 'cupos-low'"></td>
+                    </tr>
+                    <tr class="empty-row" th:if="${#lists.isEmpty(estadisticas)}">
+                        <td colspan="5">No hay estadísticas disponibles.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="legend"><strong>Interpretación rápida:</strong> si un evento supera 90% de ocupación, aparece
+                resaltado para priorizar decisiones.</div>
+        </div>
+
+    </body>
+
 </html>

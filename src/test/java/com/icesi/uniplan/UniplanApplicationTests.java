@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @ActiveProfiles("test")
 class UniplanApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

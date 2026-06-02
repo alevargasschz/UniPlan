@@ -5,7 +5,6 @@ import com.icesi.uniplan.dto.request.DatosEspecificosRequest;
 import com.icesi.uniplan.dto.request.ConferencistaRequest;
 import com.icesi.uniplan.model.mongo.Usuario;
 import com.icesi.uniplan.model.mongo.embedded.Estudiante;
-import com.icesi.uniplan.model.mongo.embedded.Taller;
 import com.icesi.uniplan.model.mongo.enums.TipoEvento;
 import com.icesi.uniplan.model.mongo.enums.TipoUsuario;
 import com.icesi.uniplan.model.postgres.*;
@@ -25,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -92,9 +92,13 @@ public abstract class IntegrationTestSupport {
     @Autowired
     protected IGroupRepository groupRepository;
 
+    @Autowired
+    protected IUserRepository userRepository;
+
     @BeforeEach
     void cleanDatabase() {
         enrollmentRepository.deleteAll();
+        userRepository.deleteAll();
         groupRepository.deleteAll();
         subjectRepository.deleteAll();
         programRepository.deleteAll();
@@ -111,9 +115,32 @@ public abstract class IntegrationTestSupport {
         usuarioRepository.deleteAll();
         contractTypeRepository.deleteAll();
         employeeTypeRepository.deleteAll();
+        seedRoleCatalog();
         mockMvc = webAppContextSetup(webApplicationContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
+    }
+
+    protected void seedRoleCatalog() {
+        seedRole("ESTUDIANTE");
+        seedRole("PROFESOR");
+        seedRole("LIDER_ESTUDIANTIL");
+        seedRole("BIENESTAR");
+    }
+
+    protected void seedRole(String role) {
+        String username = "__role_" + role;
+        if (userRepository.findByUsername(username).isPresent()) {
+            return;
+        }
+
+        com.icesi.uniplan.model.postgres.User rolCatalogo = new com.icesi.uniplan.model.postgres.User();
+        rolCatalogo.setUsername(username);
+        rolCatalogo.setPasswordHash("seed-role");
+        rolCatalogo.setRole(role);
+        rolCatalogo.setIsActive(Boolean.TRUE);
+        rolCatalogo.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        userRepository.save(rolCatalogo);
     }
 
     protected Usuario saveUser(String correo, String nombre, TipoUsuario tipo, String rawPassword) {

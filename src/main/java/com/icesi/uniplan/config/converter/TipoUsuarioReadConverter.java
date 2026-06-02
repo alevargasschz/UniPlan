@@ -9,9 +9,11 @@ public class TipoUsuarioReadConverter implements Converter<String, TipoUsuario> 
 
     @Override
     public TipoUsuario convert(String source) {
-        if (source == null) return null;
+        if (source == null)
+            return null;
         for (TipoUsuario t : TipoUsuario.values()) {
-            if (t.getDbValue().equalsIgnoreCase(source)) return t;
+            if (t.getDbValue().equalsIgnoreCase(source))
+                return t;
         }
         return null;
     }

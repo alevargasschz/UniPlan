@@ -13,6 +13,10 @@ public interface IEventoService {
 
     Evento crearEvento(CrearEventoRequest request, String correoOrganizador);
 
+    Evento actualizarEvento(String eventoId, CrearEventoRequest request, String correoOrganizador);
+
+    void eliminarEvento(String eventoId, String correoOrganizador);
+
     List<Evento> listarEventos(TipoEvento tipo, EstadoEvento estado, Date inicio, Date fin);
 
     Evento obtenerEvento(String id);
@@ -20,6 +24,8 @@ public interface IEventoService {
     void inscribirEstudiante(String eventoId, String correoEstudiante);
 
     void cancelarInscripcion(String eventoId, String correoEstudiante);
+
+    void confirmarAsistencia(String eventoId, String inscripcionId, String correoOrganizador);
 
     List<Inscripcion> listarInscritos(String eventoId, String correoOrganizador);
 

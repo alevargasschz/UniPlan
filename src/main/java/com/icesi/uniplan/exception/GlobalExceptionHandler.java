@@ -1,4 +1,4 @@
-package com.icesi.uniplan.controller;
+package com.icesi.uniplan.exception;
 
 import com.icesi.uniplan.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;

@@ -35,8 +35,8 @@ public class UsuarioDatosEspecificosValidator implements ConstraintValidator<Usu
         if (!valid) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(
-                    "datos_especificos no coincide con el tipo de usuario"
-            ).addPropertyNode("datosEspecificos").addConstraintViolation();
+                    "datos_especificos no coincide con el tipo de usuario").addPropertyNode("datosEspecificos")
+                    .addConstraintViolation();
         }
 
         return valid;

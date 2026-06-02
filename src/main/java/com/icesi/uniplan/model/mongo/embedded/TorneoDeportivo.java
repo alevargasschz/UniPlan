@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data

@@ -6,11 +6,11 @@ import com.icesi.uniplan.model.mongo.enums.TipoEvento;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class EventoResponse {
     private String id;
+    private String codigo;
     private String titulo;
     private String descripcion;
     private TipoEvento tipo;

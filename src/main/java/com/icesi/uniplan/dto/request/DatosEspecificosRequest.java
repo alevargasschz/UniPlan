@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * DTO plano que agrupa los campos de todos los tipos de datos específicos.
- * El servicio construye el subtipo correcto (Taller/Charla/Torneo/Voluntariado/OtroEvento)
+ * El servicio construye el subtipo correcto
+ * (Taller/Charla/Torneo/Voluntariado/OtroEvento)
  * según el TipoEvento del evento.
  */
 @Data

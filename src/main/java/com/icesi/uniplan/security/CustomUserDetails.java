@@ -21,7 +21,8 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (user.getRole() == null) return Collections.emptyList();
+        if (user.getRole() == null)
+            return Collections.emptyList();
         String role = user.getRole();
         // use ROLE_ prefix for role-based authorities
         SecurityAuthority auth = new SecurityAuthority("ROLE_" + role);
@@ -37,7 +38,7 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return user.getUsername();
     }
-    
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -57,5 +58,5 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return user.getIsActive() == null ? true : user.getIsActive();
     }
-    
+
 }

@@ -40,6 +40,10 @@ public class EventoEstadistica {
     @Builder.Default
     private Integer totalCancelaciones = 0;
 
+    @Column(name = "total_asistentes", nullable = false)
+    @Builder.Default
+    private Integer totalAsistentes = 0;
+
     @Column(name = "porcentaje_ocupacion")
     @Builder.Default
     private Double porcentajeOcupacion = 0.0;

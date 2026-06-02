@@ -10,5 +10,6 @@ public class EstadisticaResponse {
     private Integer maxAsistentes;
     private Integer totalInscritos;
     private Integer totalCancelaciones;
+    private Integer totalAsistentes;
     private Double porcentajeOcupacion;
 }

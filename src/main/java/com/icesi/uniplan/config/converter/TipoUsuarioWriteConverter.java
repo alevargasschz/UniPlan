@@ -9,7 +9,8 @@ public class TipoUsuarioWriteConverter implements Converter<TipoUsuario, String>
 
     @Override
     public String convert(TipoUsuario source) {
-        if (source == null) return null;
+        if (source == null)
+            return null;
         return source.getDbValue();
     }
 }

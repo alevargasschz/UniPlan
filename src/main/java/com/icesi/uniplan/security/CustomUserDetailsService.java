@@ -31,8 +31,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         System.out.println("[UserDetailsService] DatosEspecificos: " + usuario.getDatosEspecificos());
         System.out.println("[UserDetailsService] Password hash: " + usuario.getContrasena());
         System.out.println("[UserDetailsService] Longitud hash: " + usuario.getContrasena().length());
-        System.out.println("[UserDetailsService] BCrypt test: " + 
-        new BCryptPasswordEncoder().matches("password", usuario.getContrasena()));
+        System.out.println("[UserDetailsService] BCrypt test: " +
+                new BCryptPasswordEncoder().matches("password", usuario.getContrasena()));
 
         return new MongoUserDetails(usuario);
     }

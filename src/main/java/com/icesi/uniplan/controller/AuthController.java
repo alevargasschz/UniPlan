@@ -17,7 +17,17 @@ public class AuthController {
     private final IUsuarioService usuarioService;
 
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(
+            @RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "logout", required = false) String logout,
+            Model model) {
+        if (error != null) {
+            model.addAttribute("error",
+                    "No pudimos iniciar sesión. Verifica tu correo y contraseña, y vuelve a intentarlo.");
+        }
+        if (logout != null) {
+            model.addAttribute("info", "Tu sesión se cerró correctamente.");
+        }
         return "auth/login";
     }
 
@@ -40,6 +50,4 @@ public class AuthController {
             return "redirect:/public/auth/registro/estudiante";
         }
     }
-
-    
 }

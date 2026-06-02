@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
 @Constraint(validatedBy = EventoDatosEspecificosValidator.class)
-@Target({TYPE})
+@Target({ TYPE })
 @Retention(RUNTIME)
 public @interface EventoDatosEspecificosValid {
     String message() default "El tipo de evento no coincide con la clase de detalles";

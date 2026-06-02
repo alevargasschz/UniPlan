@@ -12,8 +12,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class UniplanApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UniplanApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UniplanApplication.class, args);
+    }
 
 }

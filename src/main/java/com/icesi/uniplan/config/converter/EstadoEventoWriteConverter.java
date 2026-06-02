@@ -9,7 +9,8 @@ public class EstadoEventoWriteConverter implements Converter<EstadoEvento, Strin
 
     @Override
     public String convert(EstadoEvento source) {
-        if (source == null) return null;
+        if (source == null)
+            return null;
         return source.getDbValue();
     }
 }

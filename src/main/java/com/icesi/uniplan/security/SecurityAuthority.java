@@ -14,5 +14,5 @@ public class SecurityAuthority implements GrantedAuthority {
     public @Nullable String getAuthority() {
         return authority;
     }
-    
+
 }

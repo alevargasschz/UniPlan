@@ -11,9 +11,6 @@ public class RegistroEstudianteRequest {
     @NotBlank(message = "El código estudiantil es requerido")
     private String codigoEstudiantil;
 
-    @NotBlank(message = "El nombre es requerido")
-    private String nombre;
-
     @NotBlank(message = "El correo es requerido")
     @Email(message = "Debe ser un correo válido")
     private String correo;

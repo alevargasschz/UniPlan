@@ -1,58 +1,119 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Eventos - UniPlan</title>
-    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
-</head>
-<body>
-  <div class="nav">
-    <span class="nav-brand">UniPlan</span>
-    <div class="nav-links">
-      <a th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
-      <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
-      <a sec:authorize="hasAnyRole('BIENESTAR', 'PROFESOR')" th:href="@{/reportes/estadisticas}">Estadisticas</a>
-      <a sec:authorize="hasAnyRole('BIENESTAR')" th:href="@{/admin/organizadores}">Organizadores</a>
-      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
-    </div>
-  </div>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-  <div class="card">
-    <div class="card-header"><h1>Catálogo de Eventos</h1></div>
-    <table>
-      <thead>
-            <tr>
-                <th>Título</th>
-                <th>Tipo</th>
-                <th>Fecha y Hora</th>
-                <th>Ubicación</th>
-                <th>Cupos</th>
-                <th>Estado</th>
-                <th></th>
-            </tr>
-        </thead>
-      <tbody>
-        <tr th:each="evento : ${eventos}">
-          <td class="titulo" th:text="${evento.titulo}"></td>
-          <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
-          <td class="secundario"
-              th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
-          <td class="secundario" th:text="${evento.ubicacion}"></td>
-          <td th:text="${evento.cuposDisponibles}"
-              th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
-          <td>
-            <span class="badge"
-                  th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
-                  th:text="${evento.estado}"></span>
-          </td>
-          <td><a class="ev-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver detalle</a></td>
-        </tr>
-        <tr class="empty-row" th:if="${#lists.isEmpty(eventos)}">
-          <td colspan="7">No hay eventos disponibles.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Eventos - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+    </head>
+
+    <body>
+        <div class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Consulta, filtra e inscríbete en eventos universitarios en un solo lugar.</span>
+            <div class="nav-links">
+                <a sec:authorize="hasAnyRole('PROFESOR','LIDER_ESTUDIANTIL','BIENESTAR')"
+                    th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
+                <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
+                <a sec:authorize="hasAnyRole('BIENESTAR','PROFESOR','LIDER_ESTUDIANTIL')"
+                    th:href="@{/reportes/estadisticas}">Estadísticas</a>
+                <a sec:authorize="hasAnyRole('BIENESTAR')" th:href="@{/admin/organizadores}">Organizadores</a>
+                <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1>Catálogo de Eventos</h1>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Resultados: ' + ${#lists.size(eventos)}"></span>
+                <span class="summary-pill" th:if="${tipo != null}" th:text="'Tipo: ' + ${tipo.dbValue}"></span>
+                <span class="summary-pill" th:if="${estado != null}" th:text="'Estado: ' + ${estado}"></span>
+                <span class="summary-pill" th:if="${inicio != null or fin != null}"
+                    th:text="|Rango: ${inicio != null ? inicio : '...'} a ${fin != null ? fin : '...'}|"></span>
+            </div>
+            <div class="section-hint">Tip: si buscas eventos disponibles para inscripción, usa estado
+                <strong>PROGRAMADO</strong> o <strong>ACTIVO</strong>.</div>
+
+            <form class="filtros" th:action="@{/eventos}" method="get">
+                <div class="filtro-item">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo">
+                        <option value="">Todos</option>
+                        <option th:each="tipoEvento : ${tiposEvento}" th:value="${tipoEvento.name()}"
+                            th:text="${tipoEvento.dbValue}" th:selected="${tipo != null and tipoEvento == tipo}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="estado">Estado</label>
+                    <select id="estado" name="estado">
+                        <option value="">Todos</option>
+                        <option value="PROGRAMADO" th:selected="${estado != null and estado.name() == 'PROGRAMADO'}">
+                            Próximos</option>
+                        <option value="ACTIVO" th:selected="${estado != null and estado.name() == 'ACTIVO'}">En curso
+                        </option>
+                        <option value="FINALIZADO" th:selected="${estado != null and estado.name() == 'FINALIZADO'}">
+                            Finalizados</option>
+                    </select>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="inicio">Desde</label>
+                    <input id="inicio" name="inicio" type="date" th:value="${inicio}">
+                    <small>Fecha de inicio del rango</small>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="fin">Hasta</label>
+                    <input id="fin" name="fin" type="date" th:value="${fin}">
+                    <small>Fecha final del rango</small>
+                </div>
+
+                <div class="filtro-actions">
+                    <button type="submit" class="btn-filtrar">Filtrar</button>
+                    <a th:href="@{/eventos}" class="btn-limpiar">Limpiar</a>
+                </div>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Fecha y Hora</th>
+                        <th>Ubicación</th>
+                        <th>Cupos</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="evento : ${eventos}">
+                        <td class="titulo" th:text="${evento.titulo}"></td>
+                        <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
+                        <td class="secundario"
+                            th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="secundario" th:text="${evento.ubicacion}"></td>
+                        <td th:text="${evento.cuposDisponibles}"
+                            th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
+                        <td>
+                            <span class="badge" th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
+                                th:text="${evento.estado}"></span>
+                        </td>
+                        <td><a class="ev-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver detalle</a></td>
+                    </tr>
+                    <tr class="empty-row" th:if="${#lists.isEmpty(eventos)}">
+                        <td colspan="7">No hay eventos con los filtros actuales. Prueba limpiar los filtros o ampliar el
+                            rango de fechas.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="legend"><strong>Estados:</strong> PROGRAMADO = próximo, ACTIVO = en curso, FINALIZADO =
+                terminado, CANCELADO = no disponible.</div>
+        </div>
+    </body>
+
 </html>

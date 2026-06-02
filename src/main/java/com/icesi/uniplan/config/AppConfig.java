@@ -1,12 +1,10 @@
 package com.icesi.uniplan.config;
 
-import com.icesi.uniplan.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,8 +20,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class AppConfig {
 
-    private final CustomUserDetailsService customUserDetailsService;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -37,25 +33,22 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/public/**", "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/admin/**").hasRole("BIENESTAR")
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/public/auth/login")
-                .loginProcessingUrl("/public/auth/login")
-                .usernameParameter("correo")
-                .passwordParameter("contrasena")
-                .defaultSuccessUrl("/eventos", true)
-                .failureUrl("/public/auth/login?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/public/auth/login?logout")
-                .permitAll()
-            )
-            .build();
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/public/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("BIENESTAR")
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .loginPage("/public/auth/login")
+                        .loginProcessingUrl("/public/auth/login")
+                        .usernameParameter("correo")
+                        .passwordParameter("contrasena")
+                        .defaultSuccessUrl("/eventos", true)
+                        .failureUrl("/public/auth/login?error=true")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/public/auth/login?logout")
+                        .permitAll())
+                .build();
     }
 }

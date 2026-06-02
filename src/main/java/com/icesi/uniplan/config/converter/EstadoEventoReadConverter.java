@@ -9,9 +9,11 @@ public class EstadoEventoReadConverter implements Converter<String, EstadoEvento
 
     @Override
     public EstadoEvento convert(String source) {
-        if (source == null) return null;
+        if (source == null)
+            return null;
         for (EstadoEvento e : EstadoEvento.values()) {
-            if (e.getDbValue().equalsIgnoreCase(source)) return e;
+            if (e.getDbValue().equalsIgnoreCase(source))
+                return e;
         }
         return null;
     }

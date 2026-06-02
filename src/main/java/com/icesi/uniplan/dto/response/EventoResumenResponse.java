@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class EventoResumenResponse {
     private String id;
+    private String codigo;
     private String titulo;
     private TipoEvento tipo;
     private LocalDateTime fechaHoraInicio;

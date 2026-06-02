@@ -9,7 +9,8 @@ public class TipoEventoWriteConverter implements Converter<TipoEvento, String> {
 
     @Override
     public String convert(TipoEvento source) {
-        if (source == null) return null;
+        if (source == null)
+            return null;
         return source.getDbValue();
     }
 }

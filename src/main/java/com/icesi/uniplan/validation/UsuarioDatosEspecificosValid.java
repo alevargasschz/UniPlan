@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
 @Constraint(validatedBy = UsuarioDatosEspecificosValidator.class)
-@Target({TYPE})
+@Target({ TYPE })
 @Retention(RUNTIME)
 public @interface UsuarioDatosEspecificosValid {
     String message() default "El tipo de usuario no coincide con la clase de datos_especificos";

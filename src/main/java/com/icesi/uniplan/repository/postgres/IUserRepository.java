@@ -28,6 +28,12 @@ public interface IUserRepository extends JpaRepository<User, String> {
     List<User> findByRole(String role);
 
     /**
+     * Valida si existe al menos un registro con el rol indicado (ignorando mayúsculas/minúsculas).
+     */
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE UPPER(u.role) = UPPER(:role)")
+    boolean existsRoleIgnoreCase(@Param("role") String role);
+
+    /**
      * Encuentra un usuario por su estudiante asociado.
      */
     Optional<User> findByStudent_Id(String studentId);

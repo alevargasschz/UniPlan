@@ -9,9 +9,11 @@ public class TipoEventoReadConverter implements Converter<String, TipoEvento> {
 
     @Override
     public TipoEvento convert(String source) {
-        if (source == null) return null;
+        if (source == null)
+            return null;
         for (TipoEvento t : TipoEvento.values()) {
-            if (t.getDbValue().equalsIgnoreCase(source)) return t;
+            if (t.getDbValue().equalsIgnoreCase(source))
+                return t;
         }
         return null;
     }

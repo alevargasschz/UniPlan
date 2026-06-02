@@ -40,13 +40,7 @@ public class EventoServiceImpl implements IEventoService {
 
     @Override
     public Evento crearEvento(CrearEventoRequest request, String correoOrganizador) {
-        LocalDateTime ahora = LocalDateTime.now();
-        if (request.getFechaHoraInicio().isBefore(ahora)) {
-            throw new IllegalArgumentException("La fecha de inicio no puede ser en el pasado");
-        }
-        if (!request.getFechaHoraFin().isAfter(request.getFechaHoraInicio())) {
-            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio");
-        }
+        validarFechasEvento(request);
 
         Usuario organizador = usuarioRepository.findByCorreo(correoOrganizador)
                 .orElseThrow(() -> new IllegalArgumentException("Organizador no encontrado"));
@@ -75,6 +69,54 @@ public class EventoServiceImpl implements IEventoService {
         Evento guardado = eventoRepository.save(evento);
         estadisticaService.crearEstadistica(guardado);
         return guardado;
+    }
+
+    @Override
+    public Evento actualizarEvento(String eventoId, CrearEventoRequest request, String correoOrganizador) {
+        validarFechasEvento(request);
+
+        Evento evento = eventoRepository.findByIdAndOrganizadorCorreo(eventoId, correoOrganizador)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Evento no encontrado o no pertenece a este organizador"));
+
+        if (request.getMaxAsistentes() < evento.getTotalInscritos()) {
+            throw new IllegalArgumentException(
+                    "El máximo de asistentes no puede ser menor al total de inscritos actual");
+        }
+
+        evento.setTitulo(request.getTitulo());
+        evento.setDescripcion(request.getDescripcion());
+        evento.setTipo(request.getTipo());
+        evento.setFechaHoraInicio(request.getFechaHoraInicio());
+        evento.setFechaHoraFin(request.getFechaHoraFin());
+        evento.setUbicacion(request.getUbicacion());
+        evento.setMaxAsistentes(request.getMaxAsistentes());
+        evento.setDatosEspecificos(buildDatosEspecificosEvento(request));
+        evento.setCuposDisponibles(Math.max(0, request.getMaxAsistentes() - evento.getTotalInscritos()));
+
+        Evento actualizado = eventoRepository.save(evento);
+        estadisticaService.actualizarEstadistica(actualizado);
+        return actualizado;
+    }
+
+    @Override
+    public void eliminarEvento(String eventoId, String correoOrganizador) {
+        Evento evento = eventoRepository.findByIdAndOrganizadorCorreo(eventoId, correoOrganizador)
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Evento no encontrado o no pertenece a este organizador"));
+
+        eventoRepository.delete(evento);
+        estadisticaService.eliminarEstadistica(eventoId);
+    }
+
+    private void validarFechasEvento(CrearEventoRequest request) {
+        LocalDateTime ahora = LocalDateTime.now();
+        if (request.getFechaHoraInicio().isBefore(ahora)) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser en el pasado");
+        }
+        if (!request.getFechaHoraFin().isAfter(request.getFechaHoraInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio");
+        }
     }
 
     private DatosEspecificos buildDatosEspecificosEvento(CrearEventoRequest request) {
@@ -172,13 +214,10 @@ public class EventoServiceImpl implements IEventoService {
         Usuario usuario = usuarioRepository.findByCorreo(correoEstudiante)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        if (usuario.getTipo() != TipoUsuario.ESTUDIANTE) {
-            throw new IllegalArgumentException("Solo los estudiantes pueden inscribirse a eventos");
-        }
-
         EstadoEvento estado = evento.getEstado();
         if (estado == EstadoEvento.FINALIZADO || estado == EstadoEvento.CANCELADO) {
-            throw new IllegalArgumentException("El evento no está disponible para inscripción (estado: " + estado + ")");
+            throw new IllegalArgumentException(
+                    "El evento no está disponible para inscripción (estado: " + estado + ")");
         }
 
         if (evento.getCuposDisponibles() <= 0) {
@@ -194,12 +233,17 @@ public class EventoServiceImpl implements IEventoService {
         // Validaciones específicas por tipo de evento
         validarInscripcionPorTipo(evento, usuario);
 
-        Estudiante estudianteDatos = (Estudiante) usuario.getDatosEspecificos();
+        String codigoEstudiante = null;
+        if (usuario.getTipo() == TipoUsuario.ESTUDIANTE
+                && usuario.getDatosEspecificos() instanceof Estudiante estudianteDatos) {
+            codigoEstudiante = estudianteDatos.getCodigo();
+        }
+
         Inscripcion inscripcion = new Inscripcion(
                 new ObjectId(),
                 usuario.getNombre(),
                 correoEstudiante,
-                estudianteDatos.getCodigo(),
+                codigoEstudiante,
                 LocalDateTime.now(),
                 false);
 
@@ -212,6 +256,10 @@ public class EventoServiceImpl implements IEventoService {
     }
 
     private void validarInscripcionPorTipo(Evento evento, Usuario usuario) {
+        if (usuario.getTipo() != TipoUsuario.ESTUDIANTE) {
+            return;
+        }
+
         Estudiante estudianteDatos = (Estudiante) usuario.getDatosEspecificos();
         String codigoEstudiante = estudianteDatos.getCodigo();
 
@@ -219,13 +267,15 @@ public class EventoServiceImpl implements IEventoService {
             case taller -> validarTaller(evento, codigoEstudiante);
             case torneo -> validarTorneo(evento, usuario.getCorreo());
             case voluntariado -> validarVoluntariado(evento, usuario.getCorreo());
-            case charla, otro -> { /* Sin validaciones adicionales */ }
+            case charla, otro -> {
+                /* Sin validaciones adicionales */ }
         }
     }
 
     /**
      * Verifica condiciones previas del taller consultando la BD institucional.
-     * - "SEMESTRE:N" → el estudiante debe haber completado al menos N semestres distintos
+     * - "SEMESTRE:N" → el estudiante debe haber completado al menos N semestres
+     * distintos
      * - Cualquier otro valor → código o nombre de materia que debe estar completada
      */
     private void validarTaller(Evento evento, String codigoEstudiante) {
@@ -266,7 +316,7 @@ public class EventoServiceImpl implements IEventoService {
         boolean tieneTraslape = torneos.stream()
                 .filter(t -> !t.getId().equals(eventoNuevo.getId()))
                 .filter(t -> t.getEstado() != EstadoEvento.FINALIZADO
-                          && t.getEstado() != EstadoEvento.CANCELADO)
+                        && t.getEstado() != EstadoEvento.CANCELADO)
                 .filter(t -> t.getInscripciones().stream()
                         .anyMatch(i -> i.getCorreo().equalsIgnoreCase(correoEstudiante)))
                 .anyMatch(t -> hayTraslape(t, eventoNuevo));
@@ -283,8 +333,10 @@ public class EventoServiceImpl implements IEventoService {
     }
 
     /**
-     * Verifica que el estudiante tenga suficientes horas de voluntariado previas confirmadas.
-     * Las horas se acumulan de participaciones confirmadas en voluntariados ya finalizados.
+     * Verifica que el estudiante tenga suficientes horas de voluntariado previas
+     * confirmadas.
+     * Las horas se acumulan de participaciones confirmadas en voluntariados ya
+     * finalizados.
      */
     private void validarVoluntariado(Evento eventoNuevo, String correoEstudiante) {
         ActividadVoluntariado voluntariado = (ActividadVoluntariado) eventoNuevo.getDatosEspecificos();
@@ -298,7 +350,7 @@ public class EventoServiceImpl implements IEventoService {
         int horasAcumuladas = voluntariadosFinalizados.stream()
                 .filter(v -> v.getInscripciones().stream()
                         .anyMatch(i -> i.getCorreo().equalsIgnoreCase(correoEstudiante)
-                                    && Boolean.TRUE.equals(i.getConfirmada())))
+                                && Boolean.TRUE.equals(i.getConfirmada())))
                 .mapToInt(v -> ((ActividadVoluntariado) v.getDatosEspecificos()).getNumeroHorasRequeridas())
                 .sum();
 
@@ -329,6 +381,29 @@ public class EventoServiceImpl implements IEventoService {
 
         eventoRepository.save(evento);
         estadisticaService.registrarCancelacion(eventoId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Confirmar asistencia
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void confirmarAsistencia(String eventoId, String inscripcionId, String correoOrganizador) {
+        Evento evento = eventoRepository.findByIdAndOrganizadorCorreo(eventoId, correoOrganizador)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Evento no encontrado o no pertenece a este organizador"));
+
+        Inscripcion ins = evento.getInscripciones().stream()
+                .filter(i -> i.getId() != null && i.getId().toHexString().equals(inscripcionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Inscripción no encontrada"));
+
+        if (Boolean.TRUE.equals(ins.getConfirmada()))
+            return; // ya confirmada
+
+        ins.setConfirmada(true);
+        eventoRepository.save(evento);
+        estadisticaService.registrarAsistencia(eventoId);
     }
 
     // -------------------------------------------------------------------------
@@ -373,7 +448,8 @@ public class EventoServiceImpl implements IEventoService {
         List<Evento> eventos = eventoRepository.findAll();
 
         for (Evento evento : eventos) {
-            if (evento.getEstado() == EstadoEvento.CANCELADO) continue;
+            if (evento.getEstado() == EstadoEvento.CANCELADO)
+                continue;
 
             EstadoEvento nuevoEstado;
             if (ahora.isBefore(evento.getFechaHoraInicio())) {

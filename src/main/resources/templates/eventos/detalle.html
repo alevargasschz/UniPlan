@@ -1,85 +1,227 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalle Evento - UniPlan</title>
-    <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
-</head>
-<body>
 
-  <div class="nav">
-    <span class="nav-brand">UniPlan</span>
-    <div class="nav-links">
-      <a th:href="@{/eventos}">Catálogo de Eventos</a>
-      <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
-    </div>
-  </div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Detalle Evento - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+    </head>
 
-  <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <body>
 
-  <div class="card">
-    <div class="card-header">
-      <h1 th:text="${evento.titulo}">Detalle del Evento</h1>
-    </div>
+        <div class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Revisa la información del evento antes de inscribirte.</span>
+            <div class="nav-links">
+                <a th:href="@{/eventos}">Catálogo de Eventos</a>
+                <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+            </div>
+        </div>
 
-    <table>
-      <tbody>
-        <tr>
-          <td class="titulo">Descripción</td>
-          <td class="secundario" th:text="${evento.descripcion}"></td>
-        </tr>
-        <tr>
-          <td class="titulo">Tipo</td>
-          <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
-        </tr>
-        <tr>
-          <td class="titulo">Fecha Inicio</td>
-          <td class="secundario"
-              th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
-        </tr>
-        <tr>
-          <td class="titulo">Fecha Fin</td>
-          <td class="secundario"
-              th:text="${#temporals.format(evento.fechaHoraFin,'dd/MM/yyyy HH:mm')}"></td>
-        </tr>
-        <tr>
-          <td class="titulo">Ubicación</td>
-          <td class="secundario" th:text="${evento.ubicacion}"></td>
-        </tr>
-        <tr>
-          <td class="titulo">Cupos Disponibles</td>
-          <td th:text="${evento.cuposDisponibles}"
-              th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
-        </tr>
-        <tr>
-          <td class="titulo">Total Inscritos</td>
-          <td class="secundario" th:text="${evento.totalInscritos}"></td>
-        </tr>
-        <tr>
-          <td class="titulo">Estado</td>
-          <td>
-            <span class="badge"
-                  th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
-                  th:text="${evento.estado}"></span>
-          </td>
-        </tr>
-        <tr>
-          <td class="titulo">Organizador</td>
-          <td class="secundario" th:text="${evento.organizadorNombre}"></td>
-        </tr>
-      </tbody>
-    </table>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-    <div style="padding: 1.25rem 1.5rem; border-top: 0.5px solid rgba(0,0,0,0.08);">
-      <form th:action="@{/inscripciones/{id}(id=${evento.id})}" method="post">
-        <button type="submit" class="badge badge-activo"
-                style="cursor: pointer; border: none; padding: 8px 16px; font-size: 13px; border-radius: 8px;">
-          Inscribirse
-        </button>
-      </form>
-    </div>
-  </div>
+        <div class="card">
+            <div class="card-header">
+                <h1 th:text="${evento.titulo}">Detalle del Evento</h1>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Cupos disponibles: ' + ${evento.cuposDisponibles}"></span>
+                <span class="summary-pill" th:text="'Inscritos: ' + ${evento.totalInscritos}"></span>
+                <span class="summary-pill" th:text="'Estado: ' + ${evento.estado}"></span>
+            </div>
+            <div class="section-hint">Si ya estás inscrito, puedes cancelar desde <strong>Mis Inscripciones</strong>.
+            </div>
 
-</body>
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="titulo">Descripción</td>
+                        <td class="secundario" th:text="${evento.descripcion}"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Tipo</td>
+                        <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Fecha Inicio</td>
+                        <td class="secundario"
+                            th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Fecha Fin</td>
+                        <td class="secundario" th:text="${#temporals.format(evento.fechaHoraFin,'dd/MM/yyyy HH:mm')}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Ubicación</td>
+                        <td class="secundario" th:text="${evento.ubicacion}"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Cupos Disponibles</td>
+                        <td th:text="${evento.cuposDisponibles}"
+                            th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Total Inscritos</td>
+                        <td class="secundario" th:text="${evento.totalInscritos}"></td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Estado</td>
+                        <td>
+                            <span class="badge" th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
+                                th:text="${evento.estado}"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="titulo">Organizador</td>
+                        <td class="secundario" th:text="${evento.organizadorNombre}"></td>
+                    </tr>
+
+                    <tr th:if="${evento.datosEspecificos != null}">
+                        <td class="titulo">Información adicional</td>
+                        <td class="secundario">Datos específicos del tipo de evento</td>
+                    </tr>
+
+                    <!-- Taller -->
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'taller' and evento.datosEspecificos != null}">
+                        <td class="titulo">Materiales requeridos</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.materialesRequeridos != null and !#lists.isEmpty(evento.datosEspecificos.materialesRequeridos) ? #strings.listJoin(evento.datosEspecificos.materialesRequeridos, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'taller' and evento.datosEspecificos != null}">
+                        <td class="titulo">Condiciones previas</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.condicionesPrevias != null and !#lists.isEmpty(evento.datosEspecificos.condicionesPrevias) ? #strings.listJoin(evento.datosEspecificos.condicionesPrevias, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+
+                    <!-- Charla -->
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'charla' and evento.datosEspecificos != null}">
+                        <td class="titulo">Conferencista</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.conferencista != null ? evento.datosEspecificos.conferencista.nombre : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'charla' and evento.datosEspecificos != null}">
+                        <td class="titulo">Perfil / Afiliación</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.conferencista != null ? evento.datosEspecificos.conferencista.perfil + ' · ' + evento.datosEspecificos.conferencista.afiliacion : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'charla' and evento.datosEspecificos != null}">
+                        <td class="titulo">Enlaces relacionados</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.enlaces != null and !#lists.isEmpty(evento.datosEspecificos.enlaces) ? #strings.listJoin(evento.datosEspecificos.enlaces, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'charla' and evento.datosEspecificos != null and evento.datosEspecificos.descripcion != null}">
+                        <td class="titulo">Descripción extendida</td>
+                        <td class="secundario" th:text="${evento.datosEspecificos.descripcion}"></td>
+                    </tr>
+
+                    <!-- Torneo -->
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'torneo' and evento.datosEspecificos != null}">
+                        <td class="titulo">Tipo de deporte</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.tipoDeporte != null ? evento.datosEspecificos.tipoDeporte : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'torneo' and evento.datosEspecificos != null}">
+                        <td class="titulo">Número de equipos</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.numeroEquipos != null ? evento.datosEspecificos.numeroEquipos : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'torneo' and evento.datosEspecificos != null}">
+                        <td class="titulo">Estructura del torneo</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.estructuraTorneo != null ? evento.datosEspecificos.estructuraTorneo : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'torneo' and evento.datosEspecificos != null}">
+                        <td class="titulo">Reglas</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.reglas != null and !#lists.isEmpty(evento.datosEspecificos.reglas) ? #strings.listJoin(evento.datosEspecificos.reglas, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+
+                    <!-- Voluntariado -->
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'voluntariado' and evento.datosEspecificos != null}">
+                        <td class="titulo">Comunidad / Causa</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.causa != null ? evento.datosEspecificos.causa : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'voluntariado' and evento.datosEspecificos != null}">
+                        <td class="titulo">Horas requeridas</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.numeroHorasRequeridas != null ? evento.datosEspecificos.numeroHorasRequeridas : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'voluntariado' and evento.datosEspecificos != null}">
+                        <td class="titulo">Actividades</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.actividades != null and !#lists.isEmpty(evento.datosEspecificos.actividades) ? #strings.listJoin(evento.datosEspecificos.actividades, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'voluntariado' and evento.datosEspecificos != null}">
+                        <td class="titulo">Puntos de encuentro / logística</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.puntosEncuentro != null and !#lists.isEmpty(evento.datosEspecificos.puntosEncuentro) ? #strings.listJoin(evento.datosEspecificos.puntosEncuentro, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'voluntariado' and evento.datosEspecificos != null}">
+                        <td class="titulo">Responsables</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.responsables != null and !#lists.isEmpty(evento.datosEspecificos.responsables) ? #strings.listJoin(evento.datosEspecificos.responsables, ', ') : 'No especificado'}">
+                        </td>
+                    </tr>
+
+                    <!-- Otro -->
+                    <tr
+                        th:if="${evento.tipo != null and evento.tipo.name() == 'otro' and evento.datosEspecificos != null}">
+                        <td class="titulo">Detalles adicionales</td>
+                        <td class="secundario"
+                            th:text="${evento.datosEspecificos.descripcionAdicional != null and !#strings.isEmpty(evento.datosEspecificos.descripcionAdicional) ? evento.datosEspecificos.descripcionAdicional : 'No especificado'}">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="padding: 1.25rem 1.5rem; border-top: 0.5px solid rgba(0,0,0,0.08);">
+                <form th:action="@{/inscripciones/{id}(id=${evento.id})}" method="post"
+                    onsubmit="return confirm('¿Deseas confirmar tu inscripción a este evento?');">
+                    <button type="submit" class="badge badge-activo"
+                        style="cursor: pointer; border: none; padding: 8px 16px; font-size: 13px; border-radius: 8px;"
+                        th:disabled="${evento.cuposDisponibles == 0 or evento.estado.name() == 'FINALIZADO' or evento.estado.name() == 'CANCELADO'}">
+                        Inscribirse
+                    </button>
+                </form>
+                <p class="helper-text" th:if="${evento.cuposDisponibles == 0}">No hay cupos disponibles en este momento.
+                </p>
+                <p class="helper-text"
+                    th:if="${evento.estado.name() == 'FINALIZADO' or evento.estado.name() == 'CANCELADO'}">El evento no
+                    acepta nuevas inscripciones por su estado actual.</p>
+            </div>
+        </div>
+
+    </body>
+
 </html>

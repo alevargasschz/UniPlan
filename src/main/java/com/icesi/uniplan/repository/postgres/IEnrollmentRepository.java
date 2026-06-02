@@ -43,4 +43,9 @@ public interface IEnrollmentRepository extends JpaRepository<Enrollment, Enrollm
     @Query("SELECT e FROM Enrollment e WHERE e.student.id = :studentId AND e.status = 'COMPLETED'")
     List<Enrollment> findCompletedEnrollmentsByStudent(@Param("studentId") String studentId);
 
+    /**
+     * Obtiene la inscripción más reciente de un estudiante para inferir semestre/programa actual.
+     */
+    Optional<Enrollment> findTopByStudent_IdOrderByEnrollmentDateDesc(String studentId);
+
 }
