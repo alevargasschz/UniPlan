@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Inscritos - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+    </head>
+
+    <body>
+
+        <nav class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Controla asistencia y exporta la lista para procesos administrativos.</span>
+            <div class="nav-links">
+                <a th:href="@{/eventos/{id}(id=${eventoId})}">← Volver al Evento</a>
+            </div>
+        </nav>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1>Lista de Inscritos</h1>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Total inscritos: ' + ${#lists.size(inscritos)}"></span>
+                <span class="summary-pill" th:text="'Evento ID: ' + ${eventoId}"></span>
+            </div>
+            <div class="section-hint">Confirma asistencia de forma individual o exporta CSV para respaldo.</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Código</th>
+                        <th>Correo</th>
+                        <th>Fecha Inscripción</th>
+                        <th>Confirmada</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${inscritos.empty}" class="empty-row">
+                        <td colspan="6">No hay inscritos para este evento.</td>
+                    </tr>
+                    <tr th:each="inscrito : ${inscritos}">
+                        <td class="titulo" th:text="${inscrito.nombre}"></td>
+                        <td class="secundario" th:text="${inscrito.codigoEstudiante}"></td>
+                        <td class="secundario" th:text="${inscrito.correo}"></td>
+                        <td class="secundario" th:text="${inscrito.fechaInscripcion}"></td>
+                        <td>
+                            <span th:if="${inscrito.confirmada}" class="badge badge-activo">Confirmada</span>
+                            <span th:unless="${inscrito.confirmada}" class="badge badge-borrador">Pendiente</span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <form th:if="${!inscrito.confirmada}"
+                                    th:action="@{/eventos/{id}/inscritos/{inscripcionId}/confirmar(id=${eventoId},inscripcionId=${inscrito.id})}"
+                                    method="post" style="display:inline; margin-right:8px;">
+                                    <button class="ev-link" type="submit"
+                                        style="background:none;border:none;cursor:pointer;">Confirmar
+                                        asistencia</button>
+                                </form>
+                                <a th:href="@{/eventos/{id}/inscritos/export(id=${eventoId})}" class="ev-link">Exportar
+                                    CSV</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </body>
+
+</html>

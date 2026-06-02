@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Estadísticas - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            .insights-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1rem;
+                padding: 1rem 1.5rem 1.5rem;
+                border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+            }
+
+            .insight-card {
+                background: #fafafa;
+                border: 0.5px solid rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                padding: 0.85rem;
+            }
+
+            .insight-card h3 {
+                font-size: 13px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 0.65rem;
+            }
+
+            .insight-canvas {
+                width: 100%;
+                max-height: 240px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Panel analítico para seguimiento de participación, demanda y asistencia.</span>
+            <div class="nav-links">
+                <a th:href="@{/eventos}">Catálogo de Eventos</a>
+                <a th:href="@{/eventos/mis-eventos}">Mis Eventos</a>
+                <a th:href="@{/reportes/mis-inscripciones}">Mis Inscripciones</a>
+                <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1>Estadísticas</h1>
+                <a class="ev-link" th:href="@{/reportes/top-eventos}">Top Eventos por Ocupación</a>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Registros estadísticos: ' + ${#lists.size(estadisticas)}"></span>
+                <span class="summary-pill" th:if="${semestreAcademico != null and !semestreAcademico.isBlank()}"
+                    th:text="'Semestre: ' + ${semestreAcademico}"></span>
+            </div>
+            <div class="section-hint">Aplica filtros para comparar periodos y detectar tendencias de participación.
+            </div>
+
+            <form class="filtros" th:action="@{/reportes/estadisticas}" method="get">
+                <div class="filtro-item">
+                    <label for="semestreAcademico">Semestre académico</label>
+                    <select id="semestreAcademico" name="semestreAcademico">
+                        <option value="">Todos</option>
+                        <option th:each="sem : ${semestresAcademicos}" th:value="${sem}" th:text="${sem}"
+                            th:selected="${semestreAcademico != null and sem == semestreAcademico}"></option>
+                    </select>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="fechaInicio">Desde</label>
+                    <input id="fechaInicio" name="fechaInicio" type="date" th:value="${fechaInicio}">
+                </div>
+
+                <div class="filtro-item">
+                    <label for="fechaFin">Hasta</label>
+                    <input id="fechaFin" name="fechaFin" type="date" th:value="${fechaFin}">
+                </div>
+
+                <div class="filtro-actions">
+                    <button type="submit" class="btn-filtrar">Aplicar</button>
+                    <a th:href="@{/reportes/estadisticas}" class="btn-limpiar">Limpiar</a>
+                </div>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Inscritos</th>
+                        <th>Cancelaciones</th>
+                        <th>% Ocupación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="est : ${estadisticas}">
+                        <td class="titulo" th:text="${est.titulo}"></td>
+                        <td><span class="badge badge-tipo" th:text="${est.tipo}"></span></td>
+                        <td th:text="${est.totalInscritos}"></td>
+                        <td th:text="${est.totalCancelaciones}"
+                            th:classappend="${est.totalCancelaciones gt 0} ? 'cupos-low'"></td>
+                        <td th:text="${est.porcentajeOcupacion} + '%'"
+                            th:classappend="${est.porcentajeOcupacion ge 90} ? 'cupos-low'"></td>
+                    </tr>
+                    <tr class="empty-row" th:if="${#lists.isEmpty(estadisticas)}">
+                        <td colspan="5">No hay estadísticas disponibles.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h3>Semestres con mayor participación</h3>
+                    <canvas id="chartTopSemestres" class="insight-canvas"></canvas>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Programas con mayor participación</h3>
+                    <canvas id="chartTopProgramas" class="insight-canvas"></canvas>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Demanda por tipo de evento (inscripciones)</h3>
+                    <canvas id="chartDemandaTipo" class="insight-canvas"></canvas>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Eventos con mayor tasa de cancelación (%)</h3>
+                    <canvas id="chartCancelacion" class="insight-canvas"></canvas>
+                </div>
+
+                <div class="insight-card">
+                    <h3>Tasa de asistencia por tipo (%)</h3>
+                    <canvas id="chartAsistenciaTipo" class="insight-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const topSemestresLabels = /*[[${topSemestresLabels}]]*/[];
+            const topSemestresValues = /*[[${topSemestresValues}]]*/[];
+            const topProgramasLabels = /*[[${topProgramasLabels}]]*/[];
+            const topProgramasValues = /*[[${topProgramasValues}]]*/[];
+            const demandaPorTipoLabels = /*[[${demandaPorTipoLabels}]]*/[];
+            const demandaPorTipoValues = /*[[${demandaPorTipoValues}]]*/[];
+            const mayorCancelacionLabels = /*[[${mayorCancelacionLabels}]]*/[];
+            const mayorCancelacionValues = /*[[${mayorCancelacionValues}]]*/[];
+            const asistenciaPorTipoLabels = /*[[${asistenciaPorTipoLabels}]]*/[];
+            const asistenciaPorTipoValues = /*[[${asistenciaPorTipoValues}]]*/[];
+
+            const createBarChart = (canvasId, labels, values, color, horizontal = false) => {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas || !labels || labels.length === 0) {
+                    if (canvas && canvas.parentElement) {
+                        const note = document.createElement('p');
+                        note.className = 'helper-text';
+                        note.textContent = 'Sin datos para los filtros seleccionados.';
+                        canvas.parentElement.appendChild(note);
+                    }
+                    return;
+                }
+
+                new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: color,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        indexAxis: horizontal ? 'y' : 'x',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true },
+                            x: { ticks: { autoSkip: false } }
+                        }
+                    }
+                });
+            };
+
+            createBarChart('chartTopSemestres', topSemestresLabels, topSemestresValues, 'rgba(72, 149, 239, 0.7)');
+            createBarChart('chartTopProgramas', topProgramasLabels, topProgramasValues, 'rgba(67, 170, 139, 0.7)', true);
+            createBarChart('chartDemandaTipo', demandaPorTipoLabels, demandaPorTipoValues, 'rgba(249, 132, 74, 0.7)');
+            createBarChart('chartCancelacion', mayorCancelacionLabels, mayorCancelacionValues, 'rgba(249, 65, 68, 0.7)', true);
+            createBarChart('chartAsistenciaTipo', asistenciaPorTipoLabels, asistenciaPorTipoValues, 'rgba(87, 117, 144, 0.75)');
+        </script>
+
+    </body>
+
+</html>

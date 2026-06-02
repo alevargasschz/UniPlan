@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Mis Eventos - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+    </head>
+
+    <body>
+
+        <div class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Administra tus eventos, inscritos y publicaciones.</span>
+            <div class="nav-links">
+                <a th:href="@{/eventos}">Catálogo de Eventos</a>
+                <a th:href="@{/eventos/crear}">Crear Nuevo Evento</a>
+                <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1>Mis Eventos</h1>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Eventos creados: ' + ${#lists.size(eventos)}"></span>
+            </div>
+            <div class="section-hint">Acciones rápidas: edita información del evento, consulta inscritos o exporta lista
+                en CSV desde la vista de inscritos.</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Tipo</th>
+                        <th>Fecha Inicio</th>
+                        <th>Ubicación</th>
+                        <th>Cupos</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="evento : ${eventos}">
+                        <td class="titulo" th:text="${evento.titulo}"></td>
+                        <td><span class="badge badge-tipo" th:text="${evento.tipo}"></span></td>
+                        <td class="secundario"
+                            th:text="${#temporals.format(evento.fechaHoraInicio,'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="secundario" th:text="${evento.ubicacion}"></td>
+                        <td th:text="${evento.cuposDisponibles}"
+                            th:classappend="${evento.cuposDisponibles le 3} ? 'cupos-low'"></td>
+                        <td>
+                            <span class="badge" th:classappend="'badge-' + ${evento.estado.name().toLowerCase()}"
+                                th:text="${evento.estado}"></span>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <a class="ev-link" th:href="@{/eventos/{id}(id=${evento.id})}">Ver Detalle</a>
+                                <a class="ev-link" th:href="@{/eventos/{id}/inscritos(id=${evento.id})}">Ver
+                                    Inscritos</a>
+                                <a class="ev-link" th:href="@{/eventos/{id}/editar(id=${evento.id})}">Editar</a>
+                                <form th:action="@{/eventos/{id}/eliminar(id=${evento.id})}" method="post"
+                                    style="display:inline;">
+                                    <button type="submit" class="ev-link danger"
+                                        style="background:none;border:none;cursor:pointer;padding:0;"
+                                        onclick="return confirm('¿Seguro que deseas eliminar este evento?');">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="empty-row" th:if="${#lists.isEmpty(eventos)}">
+                        <td colspan="7">No hay eventos disponibles.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </body>
+
+</html>

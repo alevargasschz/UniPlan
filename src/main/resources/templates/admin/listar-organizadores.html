@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Organizadores - UniPlan</title>
+        <link rel="stylesheet" th:href="@{/css/eventos/lista-eventos.css}">
+        <style>
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .btn-new {
+                font-size: 12px;
+                font-weight: 500;
+                color: #111;
+                text-decoration: none;
+                background: #f5f4f0;
+                border: 0.5px solid rgba(0, 0, 0, 0.15);
+                border-radius: 7px;
+                padding: 6px 12px;
+                white-space: nowrap;
+            }
+
+            .btn-new:hover {
+                background: #eeede8;
+            }
+
+            .badge-profesor {
+                background: #eaf0fb;
+                color: #1a4a8f;
+            }
+
+            .badge-lider_estudiantil {
+                background: #f3eafc;
+                color: #6a1a8f;
+            }
+
+            .badge-bienestar {
+                background: #eaf3de;
+                color: #3b6d11;
+            }
+
+            .detail-row {
+                font-size: 11px;
+                color: #999;
+                margin-top: 2px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="nav">
+            <span class="nav-brand">UniPlan</span>
+            <span class="nav-sub">Gestiona organizadores activos y sus datos institucionales.</span>
+            <div class="nav-links">
+                <a th:href="@{/eventos}">Eventos</a>
+                <a th:href="@{/reportes/estadisticas}">Estadísticas</a>
+                <a th:href="@{/admin/organizadores}" style="color:#111; font-weight:500;">Organizadores</a>
+                <a th:href="@{/logout}" class="logout">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1>Organizadores</h1>
+                <a th:href="@{/admin/organizadores/crear}" class="btn-new">+ Nuevo organizador</a>
+            </div>
+            <div class="summary-strip">
+                <span class="summary-pill" th:text="'Total organizadores: ' + ${#lists.size(organizadores)}"></span>
+                <span class="summary-pill" th:if="${tipo != null}"
+                    th:text="'Filtro activo: ' + ${tipo.name().replace('_',' ')}"></span>
+            </div>
+            <div class="section-hint">Solo se permiten organizadores validados en la base institucional. Evita
+                duplicados de correo.</div>
+
+            <form th:action="@{/admin/organizadores}" method="get" class="filtros">
+                <div class="filtro-item">
+                    <label for="tipo">Filtrar por tipo</label>
+                    <select id="tipo" name="tipo">
+                        <option value="">Todos</option>
+                        <option value="PROFESOR" th:selected="${tipo != null and tipo.name() == 'PROFESOR'}">Profesor
+                        </option>
+                        <option value="LIDER_ESTUDIANTIL"
+                            th:selected="${tipo != null and tipo.name() == 'LIDER_ESTUDIANTIL'}">Líder estudiantil
+                        </option>
+                        <option value="BIENESTAR" th:selected="${tipo != null and tipo.name() == 'BIENESTAR'}">Bienestar
+                        </option>
+                    </select>
+                </div>
+                <div class="filtro-actions">
+                    <button type="submit" class="btn-filtrar">Aplicar</button>
+                    <a th:href="@{/admin/organizadores}" class="btn-limpiar">Limpiar</a>
+                </div>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Tipo</th>
+                        <th>Detalles</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="org : ${organizadores}">
+                        <td class="titulo" th:text="${org.nombre}"></td>
+                        <td class="secundario" th:text="${org.correo}"></td>
+                        <td>
+                            <span class="badge" th:classappend="'badge-' + ${org.tipo.name().toLowerCase()}"
+                                th:text="${org.tipo.name().replace('_',' ')}"></span>
+                        </td>
+                        <td class="secundario">
+                            <th:block th:if="${org.tipo.name() == 'PROFESOR'}">
+                                <div th:if="${org.datosEspecificos != null}">
+                                    <span th:text="${org.datosEspecificos.facultad}"></span>
+                                    <div class="detail-row"
+                                        th:text="${org.datosEspecificos.departamento + ' · ' + org.datosEspecificos.especializacion}">
+                                    </div>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${org.tipo.name() == 'LIDER_ESTUDIANTIL'}">
+                                <div th:if="${org.datosEspecificos != null}">
+                                    <span th:text="${org.datosEspecificos.programa}"></span>
+                                    <div class="detail-row"
+                                        th:text="'Sem. ' + ${org.datosEspecificos.semestre} + ' · ' + ${org.datosEspecificos.representacion}">
+                                    </div>
+                                </div>
+                            </th:block>
+                            <th:block th:if="${org.tipo.name() == 'BIENESTAR'}">
+                                <div th:if="${org.datosEspecificos != null}">
+                                    <span th:text="${org.datosEspecificos.areaAdministrativa}"></span>
+                                    <div class="detail-row" th:text="${org.datosEspecificos.cargo}"></div>
+                                </div>
+                            </th:block>
+                        </td>
+                        <td>
+                            <a class="ev-link" th:href="@{/admin/organizadores/{id}/editar(id=${org.id})}">Editar</a>
+                            <form th:action="@{/admin/organizadores/{id}/eliminar(id=${org.id})}" method="post"
+                                style="display:inline;">
+                                <button type="submit" class="ev-link"
+                                    style="background:none;border:none;cursor:pointer;padding:0;"
+                                    onclick="return confirm('¿Seguro que deseas eliminar este organizador?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr class="empty-row" th:if="${#lists.isEmpty(organizadores)}">
+                        <td colspan="5">No hay organizadores con el filtro actual. Ajusta el filtro o crea un nuevo
+                            organizador.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+
+</html>

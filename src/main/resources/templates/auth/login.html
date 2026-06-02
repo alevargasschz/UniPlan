@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Iniciar sesión</title>
+        <link rel="stylesheet" th:href="@{/css/auth/login.css}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    </head>
+
+    <body>
+        <div class="login-card">
+
+            <div class="login-icon">
+                <i class="ti ti-user"></i>
+            </div>
+            <h1>Bienvenido</h1>
+            <p class="login-sub">Ingresa tus credenciales para continuar</p>
+
+            <div class="error" style="color:#2d5a8a;background:#eaf2fb;border-color:#9fc3eb;">
+                <i class="ti ti-info-circle"></i>
+                <span>Tip: usa tu correo institucional registrado en UniPlan.</span>
+            </div>
+
+            <div th:if="${error}" class="error">
+                <i class="ti ti-alert-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${info}" class="error" style="color:#2d5a8a;background:#eaf2fb;border-color:#9fc3eb;">
+                <i class="ti ti-check"></i>
+                <span th:text="${info}"></span>
+            </div>
+
+            <form th:action="@{/public/auth/login}" method="post" aria-label="Formulario de inicio de sesión">
+
+                <div class="field">
+                    <label for="correo">Correo Electrónico</label>
+                    <div class="input-wrap">
+                        <input type="text" id="correo" name="correo" placeholder="tu@correo.com" autocomplete="username"
+                            required>
+                    </div>
+                    <small class="helper-text">Puedes iniciar sesión con el correo que usaste al registrarte.</small>
+                </div>
+
+                <div class="field">
+                    <label for="contrasena">Contraseña</label>
+                    <div class="input-wrap">
+                        <input type="password" id="contrasena" name="contrasena" placeholder="••••••••"
+                            autocomplete="current-password" required>
+                    </div>
+                    <small class="helper-text">Si falla el inicio de sesión, verifica mayúsculas y minúsculas.</small>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="ti ti-arrow-right"></i>
+                    Iniciar sesión
+                </button>
+
+            </form>
+
+            <div class="divider">o</div>
+
+            <p class="register-row">
+                ¿No tienes cuenta?
+                <a th:href="@{/public/auth/registro/estudiante}">Registrarse como estudiante</a>
+            </p>
+
+        </div>
+    </body>
+
+</html>
